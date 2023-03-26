@@ -29,7 +29,7 @@ def sendEmail(email, uuid):
         service = build('gmail', 'v1', credentials=creds)
         message = EmailMessage()
 
-        message.set_content('Your code is:'+uuid)
+        message.set_content('Your code is:' + uuid)
 
         message['To'] = email
         message['From'] = 'contact.acmucr@gmail.com'
@@ -39,12 +39,10 @@ def sendEmail(email, uuid):
         encoded_message = base64.urlsafe_b64encode(message.as_bytes()) \
             .decode()
 
-        create_message = {
-            'raw': encoded_message
-        }
+        create_message = {'raw': encoded_message}
         # pylint: disable=E1101
-        send_message = (service.users().messages().send
-                        (userId="me", body=create_message).execute())
+        send_message = (service.users().messages().send(
+            userId="me", body=create_message).execute())
         # print(F'Message Id: {send_message["id"]}')
     except HttpError as error:
         print(F'An error occurred: {error}')

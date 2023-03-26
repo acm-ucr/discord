@@ -12,19 +12,18 @@ def createConnection():
     port = os.getenv('POSTGRES_PORT')
 
     try:
-        connection = psycopg2.connect(
-                host=host,
-                dbname=database,
-                user=username,
-                password=pwd,
-                port=port
-            )
+        connection = psycopg2.connect(host=host,
+                                      dbname=database,
+                                      user=username,
+                                      password=pwd,
+                                      port=port)
         cursor = connection.cursor()
     except Exception as error:
         print(error)
         return None, None
 
     return connection, cursor
+
 
 def getUser(email, discordID):
     connection, cursor = createConnection()
@@ -36,7 +35,7 @@ def getUser(email, discordID):
 
         connection.close()
         cursor.close()
-   
+
     return result
 
 
@@ -61,8 +60,8 @@ def verifyUser(discordID, uuid):
         cursor.execute(verify_user)
 
         result = cursor.fetchall()[0]
-        
-        if(result[2] == uuid):
+
+        if (result[2] == uuid):
             verify = f"UPDATE emailVerification.user SET verified='True' WHERE discordid='{discordID}'"
             cursor.execute(verify)
             connection.commit()
@@ -81,6 +80,6 @@ def updateEmail(discordID, email):
         update_email = f"UPDATE emailVerification.user SET email='{email}' WHERE discordid='{discordID}'"
         cursor.execute(update_email)
         connection.commit()
-    
+
         connection.close()
         cursor.close()
