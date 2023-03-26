@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import os
 import discord
 import shortuuid
@@ -105,7 +103,7 @@ async def code(message, *args):
         if (verifyUser(str(message.author), str(args[0]))):
             await message.author.send("Successfully verified!!🥳")
         else:
-            await message.author.send("Fail verification😭")
+            await message.author.send("Failed verification😭")
 
 
 if __name__ == '__main__':
