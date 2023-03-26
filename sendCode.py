@@ -1,6 +1,4 @@
-from __future__ import print_function
-
-import os.path
+import os
 import base64
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -9,7 +7,6 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from email.message import EmailMessage
 
-# If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.send']
 
 

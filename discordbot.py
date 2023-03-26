@@ -1,23 +1,17 @@
 from __future__ import print_function
 
 import os
-import os.path
-
 import discord
+import shortuuid
 from discord.ext import commands
 from dotenv import load_dotenv
-
-import shortuuid
-
-from sendCode import *
-from db import *
+from sendCode import sendEmail
+from db import getUser, createUser, verifyUser, updateEmail
 
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
-
-# client = discord.Client()
 
 bot = commands.Bot(command_prefix='!', intents=discord.Intents(
     messages=True, guilds=True))

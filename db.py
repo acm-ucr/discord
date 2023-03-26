@@ -1,123 +1,86 @@
 import psycopg2
-
-host = '35.233.153.157'
-database = 'emailVerification'
-username = 'postgres'
-pwd = '+98U=n"ta=;>x)gS'
-port = '5432'
-connection = None
-cursor = None
+import os
+from dotenv import load_dotenv
 
 
-def getUser(email, name, discordID):
-    result = None
+def createConnection():
+    load_dotenv()
+    host = os.getenv('POSTGRES_HOST')
+    database = os.getenv('POSTGRES_DATABASE')
+    username = os.getenv('POSTGRES_USERNAME')
+    pwd = os.getenv('POSTGRES_PASSWORD')
+    port = os.getenv('POSTGRES_PORT')
+
     try:
         connection = psycopg2.connect(
-            host=host,
-            dbname=database,
-            user=username,
-            password=pwd,
-            port=port
-        )
+                host=host,
+                dbname=database,
+                user=username,
+                password=pwd,
+                port=port
+            )
         cursor = connection.cursor()
-
-        getUser = "select * from emailverification.user where email = '" + \
-            email+"' or discordid = '"+discordID+"';"
-
-        cursor.execute(getUser)
-        for record in cursor.fetchall():
-            result = record
-
-        if(connection != None):
-            connection.close()
-        if(cursor):
-            cursor.close()
     except Exception as error:
         print(error)
-    # print(result)
+        return None, None
+
+    return connection, cursor
+
+def getUser(email, discordID):
+    connection, cursor = createConnection()
+
+    if connection and cursor:
+        get_user = f"SELECT * FROM emailverification.user WHERE email='{email}' OR discordid='{discordID}'"
+        cursor.execute(get_user)
+        result = cursor.fetchall()[0]
+
+        connection.close()
+        cursor.close()
+   
     return result
 
 
 def createUser(email, name, discordID, uuid):
-    try:
-        connection = psycopg2.connect(
-            host=host,
-            dbname=database,
-            user=username,
-            password=pwd,
-            port=port
-        )
-        cursor = connection.cursor()
+    connection, cursor = createConnection()
 
-        createuserScript = "INSERT INTO emailverification.user(name, email, code, discordid, verified) values('" + \
-            name+"', '"+email+"', '"+uuid+"', '"+discordID+"', False);"
-
-        cursor.execute(createuserScript)
+    if connection and cursor:
+        create_user = f"INSERT INTO emailverification.user(name, email, code, discordid, verified) VALUES({name}, {email}, {uuid}, {discordID}, False)"
+        cursor.execute(create_user)
         connection.commit()
 
-        if(connection != None):
-            connection.close()
-        if(cursor):
-            cursor.close()
-    except Exception as error:
-        print(error)
+        connection.close()
+        cursor.close()
 
 
 def verifyUser(discordID, uuid):
+    connection, cursor = createConnection()
     verified = False
-    result = None
-    try:
-        connection = psycopg2.connect(
-            host=host,
-            dbname=database,
-            user=username,
-            password=pwd,
-            port=port
-        )
-        cursor = connection.cursor()
 
-        verifyUserScript = "select * from emailverification.user where discordid = '"+discordID+"';"
+    if connection and cursor:
+        verify_user = f"SELECT * FROM emailverification.user WHERE discordid='{discordID}'"
+        cursor.execute(verify_user)
 
-        cursor.execute(verifyUserScript)
-
-        for record in cursor.fetchall():
-            result = record
+        result = cursor.fetchall()[0]
+        
         if(result[2] == uuid):
-            verifiedScript = "update emailVerification.user set verified = true where discordid = '"+discordID+"';"
-            cursor.execute(verifiedScript)
+            verify = f"UPDATE emailVerification.user SET verified='True' WHERE discordid='{discordID}'"
+            cursor.execute(verify)
             connection.commit()
             verified = True
-        if(connection != None):
-            connection.close()
-        if(cursor):
-            cursor.close()
-    except Exception as error:
-        print(error)
+
+        connection.close()
+        cursor.close()
+
     return verified
 
 
 def updateEmail(discordID, email):
-    verified = False
-    result = None
-    try:
-        connection = psycopg2.connect(
-            host=host,
-            dbname=database,
-            user=username,
-            password=pwd,
-            port=port
-        )
-        cursor = connection.cursor()
+    connection, cursor = createConnection()
 
-        updateEmailScript = "update emailVerification.user set email = '" + \
-            email+"' where discordid = '"+discordID+"';"
-
-        cursor.execute(updateEmailScript)
+    if connection and cursor:
+        update_email = f"UPDATE emailVerification.user SET email='{email}' WHERE discordid='{discordID}'"
+        cursor.execute(update_email)
         connection.commit()
-        if(connection != None):
-            connection.close()
-        if(cursor):
-            cursor.close()
-    except Exception as error:
-        print(error)
-    return verified
+    
+        connection.close()
+        cursor.close()
