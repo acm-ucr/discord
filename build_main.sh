@@ -5,7 +5,7 @@
 
 cd /home/contact_acmucr/email_verification
 
-exec > >(tee -a -i /home/projects/acm/buildlog.txt)
+exec > >(tee -a -i /home/contact_acmucr/email_verification/buildlog.txt)
 exec 2>&1
 
 # Builds the `main` branch 
