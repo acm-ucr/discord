@@ -5,6 +5,9 @@
 
 cd /home/contact_acmucr/email_verification
 
+exec > >(tee -a -i /home/projects/acm/buildlog.txt)
+exec 2>&1
+
 # Builds the `main` branch 
 res=$(git pull origin main | grep Already)
 
