@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # crontab
-# */5 * * * * source /home/contact_acmucr/.bashrc; /home/contact_acmucr/email_verification/build_main.sh
+# */5 * * * * /usr/bin/bash /home/contact_acmucr/email_verification/build_main.sh
 
 cd /home/contact_acmucr/email_verification
 
