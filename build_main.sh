@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# crontab
+# */5 * * * * source /home/contact_acmucr.bashrc; /home/contact_acmucr/email_verification/build_main.sh
+
 cd /home/contact_acmucr/email_verification
 
 # Builds the `main` branch 
