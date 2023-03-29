@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from firebase_db import Firestore
 from sendgrid_email import Sendgrid
 
+
 # TODO MOVE TO A DIFF FILE
 class Guild:
 
