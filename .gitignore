@@ -1,4 +1,4 @@
-credentials.json
-token.json
+firebase_creds.json
+email_creds.json
 .env
 __pycache__

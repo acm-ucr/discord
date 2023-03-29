@@ -12,7 +12,7 @@ if [[ ${res} =~ 'Already' ]]
 then
     echo 'No updates to Discord Bot!'
 else
-    pkill -9 -f discordbot.py
+    pkill -9 -f bot.py
     pip3 install -r requirements.txt
-    python3 discordbot.py
+    python3 bot.py
 fi
