@@ -4,6 +4,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from dotenv import load_dotenv
 
+
 class Firestore:
 
     def __init__(self):
@@ -19,7 +20,6 @@ class Firestore:
         db = firestore.client()
         self.db_ref = db.collection(u'users')
 
-
     def getUser(self, discord):
         query_ref = self.db_ref.where(u'discord', u'==', discord).limit(1)
 
@@ -29,13 +29,12 @@ class Firestore:
             return doc.id, doc.to_dict()
         return ("", {})
 
-
     def createUser(self, email, name, discord, uuid):
         data = {
-            "email" : email,
-            "name" : name,
+            "email": email,
+            "name": name,
             "discord": discord,
-            "uuid" : uuid,
+            "uuid": uuid,
             "verified": False
         }
 
@@ -50,7 +49,7 @@ class Firestore:
             user = {"id": doc.id, "data": doc.to_dict()}
 
         if user["data"]["uuid"] == uuid:
-            self.db_ref.document(user["id"]).update({'verified' : True})
+            self.db_ref.document(user["id"]).update({'verified': True})
             return True
         return False
 
@@ -61,5 +60,5 @@ class Firestore:
 
         for doc in docs:
             user = {"id": doc.id, "data": doc.to_dict()}
-        
-        self.db_ref.document(user["id"]).update({'email' : email})
+
+        self.db_ref.document(user["id"]).update({'email': email})
