@@ -5,18 +5,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from firebase_db import Firestore
 from sendgrid_email import Sendgrid
-
-
-# TODO MOVE TO A DIFF FILE
-class Guild:
-
-    def __init__(self):
-        self.server = None
-
-
-FIRESTORE = Firestore()
-SENDGRID = Sendgrid()
-GUILD = Guild()
+from guild import Guild
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -26,12 +15,14 @@ bot = commands.Bot(command_prefix='!',
                                            guilds=True,
                                            members=True))
 
+FIRESTORE = Firestore()
+SENDGRID = Sendgrid()
+GUILD = Guild(bot = bot)
 
 @bot.event
 async def on_ready():
     print(bot.guilds, type(bot.guilds))
     for guild in bot.guilds:
-        # TODO ADD CHECK FOR ACM SERVER
         GUILD.server = guild
 
 
@@ -81,10 +72,8 @@ async def code(ctx, *args):
 
 
 async def giveRole(ctx):
-    # TODO MAKE THESE FUNCTIONS OF THE GUILD CLASS DEFINED ABOVE
-    member = GUILD.server.get_member(ctx.author.id)
-    #TODO STORE ROLE ID IN ENV FILE
-    role = GUILD.server.get_role(1068053345526358097)
+    member = GUILD.get_member(ctx)
+    role = GUILD.get_role()
     await member.add_roles(role)
 
 
