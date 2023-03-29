@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # crontab
-# */5 * * * * /usr/bin/bash /home/contact_acmucr/email_verification/build_main.sh
+# */5 * * * * /usr/bin/bash /home/contact_acmucr/email-verification/build_main.sh
 
-cd /home/contact_acmucr/email_verification
+cd /home/contact_acmucr/email-verification
 
 # Builds the `main` branch 
 res=$(git pull origin main | grep Already)
