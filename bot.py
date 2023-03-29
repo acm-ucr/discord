@@ -6,8 +6,16 @@ from dotenv import load_dotenv
 from firebase_db import Firestore
 from sendgrid_email import Sendgrid
 
+# TODO MOVE TO A DIFF FILE
+class Guild:
+
+    def __init__(self):
+        self.server = None
+
+
 FIRESTORE = Firestore()
 SENDGRID = Sendgrid()
+GUILD = Guild()
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -16,15 +24,6 @@ bot = commands.Bot(command_prefix='!',
                    intents=discord.Intents(messages=True,
                                            guilds=True,
                                            members=True))
-
-
-class Guild:
-
-    def __init__(self):
-        self.server = None
-
-
-GUILD = Guild()
 
 
 @bot.event
@@ -68,6 +67,7 @@ async def verify(ctx, *args):
 
 
 @bot.command(name="code")
+# TODO HARDCODE THE CODE PART SINCE ANYTHING THEY SEND AFTER WE DONT CARE ABOUT
 async def code(ctx, *args):
     if (ctx.guild == None and len(args) >= 1):
         try:
@@ -80,7 +80,9 @@ async def code(ctx, *args):
 
 
 async def giveRole(ctx):
+    # TODO MAKE THESE FUNCTIONS OF THE GUILD CLASS DEFINED ABOVE
     member = GUILD.server.get_member(ctx.author.id)
+    #TODO STORE ROLE ID IN ENV FILE
     role = GUILD.server.get_role(1068053345526358097)
     await member.add_roles(role)
 
