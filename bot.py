@@ -17,7 +17,8 @@ bot = commands.Bot(command_prefix='!',
 
 FIRESTORE = Firestore()
 SENDGRID = Sendgrid()
-GUILD = Guild(bot = bot)
+GUILD = Guild(bot=bot)
+
 
 @bot.event
 async def on_ready():

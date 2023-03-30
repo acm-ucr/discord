@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 
 
-
 class Guild:
 
     def __init__(self):
@@ -13,7 +12,7 @@ class Guild:
         self.server = None
         self.role_id = int(ROLE)
         self.guild_id = int(GUILD)
-    
+
     def get_member(self, ctx):
         return self.server.get_member(ctx.author.id)
 
