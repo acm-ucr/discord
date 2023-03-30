@@ -21,7 +21,6 @@ GUILD = Guild(bot = bot)
 
 @bot.event
 async def on_ready():
-    print(bot.guilds, type(bot.guilds))
     for guild in bot.guilds:
         GUILD.server = guild
 
