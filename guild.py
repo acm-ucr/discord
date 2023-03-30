@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 class Guild:
 
-    def __init__(self, bot):
+    def __init__(self):
         load_dotenv()
         ROLE = os.getenv('DISCORD_ROLE')
         GUILD = os.getenv('DISCORD_GUILD')
