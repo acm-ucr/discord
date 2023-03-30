@@ -2,6 +2,7 @@ import os
 import discord
 import shortuuid
 from discord.ext import commands
+from discord import app_commands
 from dotenv import load_dotenv
 from firebase_db import Firestore
 from sendgrid_email import Sendgrid
@@ -11,40 +12,32 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix='!',
-                   intents=discord.Intents(messages=True,
-                                           guilds=True,
-                                           members=True))
+                   intents=discord.Intents.all())
 
 FIRESTORE = Firestore()
 SENDGRID = Sendgrid()
-GUILD = Guild(bot=bot)
+GUILD = Guild()
 
 
 @bot.event
 async def on_ready():
     for guild in bot.guilds:
         GUILD.server = guild
+    try:
+        syced = await bot.tree.sync()
+        print(len(syced))
+    except Exception as e:
+        print(e)
 
-
-@bot.command(name="verify")
-async def verify(ctx, *args):
-    # TODO CLEANUP DATA FETCHING
-    if (ctx.guild == None):
-        if (len(args) < 2):
-            await ctx.author.send(
-                "Please use the following format: `!verify <Your UCR email> <Your Full Name>` 🤔"
-            )
-            return
-        email = args[0]
-        name = args[1]
-
-        for i in range(2, len(args)):
-            name += " " + args[i]
+@bot.tree.command(name="verify")
+@app_commands.describe(name = "your full name", email = "your UCR email")
+async def verify(ctx:discord.Interaction, name:str, email:str):
+        # TODO CLEANUP DATA FETCHING
         if not "@ucr.edu" in email:
-            await ctx.author.send("Please use your ucr email 🥺")
+            await ctx.response.send_message("Please use your ucr email 🥺",ephemeral=True)
             return
 
-        discord = str(ctx.message.author)
+        discord = str(ctx.user)
 
         __, user_data = FIRESTORE.getUser(discord)
 
@@ -53,22 +46,19 @@ async def verify(ctx, *args):
             SENDGRID.sendEmail(email, uuid)
             FIRESTORE.createUser(email, name, discord, uuid)
 
-            await ctx.author.send(
-                f"Hi **{name}** your verification code is sent to your email at **{email}** \nPlease send the verification code in this format: `!code <16 Character Code> 😇`"
-            )
+            await ctx.response.send_message(f"Hi **{name}** your verification code is sent to your email at **{email}** \nPlease send the verification code in this format: `!code <16 Character Code> 😇`",ephemeral=True)
 
 
-@bot.command(name="code")
+@bot.tree.command(name="code")
+@app_commands.describe(code = "The 16 charactor verification code send to your email")
 # TODO HARDCODE THE CODE PART SINCE ANYTHING THEY SEND AFTER WE DONT CARE ABOUT
-async def code(ctx, *args):
-    if (ctx.guild == None and len(args) >= 1):
+async def code(ctx:discord.interactions, code:str):
         try:
-            if FIRESTORE.verifyUser(str(ctx.author), args[0]):
-                await ctx.author.send("Successfully verified 🥳!!")
+            if FIRESTORE.verifyUser(str(ctx.user), code):
+                await ctx.response.send_message("Successfully verified 🥳!!",ephemeral=True)
                 await giveRole(ctx)
         except Exception as error:
-            print("LINE 64", error)
-            await ctx.author.send("Failed verification 😭")
+            await ctx.response.send_message("Failed verification 😭",ephemeral=True)
 
 
 async def giveRole(ctx):
