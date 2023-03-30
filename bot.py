@@ -71,6 +71,8 @@ async def giveRole(ctx):
     member = GUILD.get_member(ctx)
     role = GUILD.get_role()
     await member.add_roles(role)
+
+
 #wow
 
 if __name__ == '__main__':
