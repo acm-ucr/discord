@@ -37,11 +37,13 @@ async def verify(ctx: discord.Interaction, name: str, email: str) -> None:
     if not re.search("[a-zA-Z]\s[a-zA-Z]", name):
         await ctx.response.send_message("Please provide a first and last name 🥺",
                                          ephemeral=True)
+        return
 
     email = email.strip().lower()
     if not re.search("[a-z]{3,5}\d{3}@ucr.edu", email):
         await ctx.response.send_message("Please use your UCR email 🥺",
                                          ephemeral=True)
+        return
     
     
 
