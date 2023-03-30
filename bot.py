@@ -1,4 +1,5 @@
 import os
+import re
 import discord
 import shortuuid
 from discord.ext import commands
@@ -11,7 +12,7 @@ from guild import Guild
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
+bot = commands.Bot(intents=discord.Intents.all())
 
 FIRESTORE = Firestore()
 SENDGRID = Sendgrid()
@@ -23,20 +24,26 @@ async def on_ready():
     for guild in bot.guilds:
         GUILD.server = guild
     try:
-        syced = await bot.tree.sync()
-        print(len(syced))
+        await bot.tree.sync()
     except Exception as e:
         print(e)
 
 
 @bot.tree.command(name="verify")
-@app_commands.describe(name="your full name", email="your UCR email")
-async def verify(ctx: discord.Interaction, name: str, email: str):
-    # TODO CLEANUP DATA FETCHING
-    if not "@ucr.edu" in email:
-        await ctx.response.send_message("Please use your ucr email 🥺",
-                                        ephemeral=True)
-        return
+@app_commands.describe(name="Full Name", email="UCR Email")
+async def verify(ctx: discord.Interaction, name: str, email: str) -> None:
+
+    name = name.strip()
+    if not re.search("[a-zA-Z]\s[a-zA-Z]", name):
+        await ctx.response.send_message("Please provide a first and last name 🥺",
+                                         ephemeral=True)
+
+    email = email.strip().lower()
+    if not re.search("[a-z]{3,5}\d{3}@ucr.edu", email):
+        await ctx.response.send_message("Please use your UCR email 🥺",
+                                         ephemeral=True)
+    
+    
 
     discord = str(ctx.user)
 
@@ -54,14 +61,20 @@ async def verify(ctx: discord.Interaction, name: str, email: str):
 
 @bot.tree.command(name="code")
 @app_commands.describe(
-    code="The 16 charactor verification code send to your email")
-# TODO HARDCODE THE CODE PART SINCE ANYTHING THEY SEND AFTER WE DONT CARE ABOUT
+    code="16 Character Code Sent Via Email")
 async def code(ctx: discord.interactions, code: str):
+    if not re.search("\w{16}", code):
+        await ctx.response.send_message("The provided code is not 16 characters long 😭!",
+                                            ephemeral=True)
+        return
     try:
         if FIRESTORE.verifyUser(str(ctx.user), code):
             await ctx.response.send_message("Successfully verified 🥳!!",
                                             ephemeral=True)
             await giveRole(ctx)
+        else:
+            await ctx.response.send_message("We were unable to verify your account 😭!",
+                                            ephemeral=True)
     except Exception as error:
         await ctx.response.send_message("Failed verification 😭",
                                         ephemeral=True)
@@ -71,9 +84,6 @@ async def giveRole(ctx):
     member = GUILD.get_member(ctx)
     role = GUILD.get_role()
     await member.add_roles(role)
-
-
-#wow
 
 if __name__ == '__main__':
     bot.run(TOKEN)
