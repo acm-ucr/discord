@@ -11,8 +11,8 @@ class Guild:
         GUILD = os.getenv('DISCORD_GUILD')
 
         self.server = None
-        self.role_id = ROLE
-        self.guild_id = GUILD
+        self.role_id = int(ROLE)
+        self.guild_id = int(GUILD)
     
     def get_member(self, ctx):
         return self.server.get_member(ctx.author.id)
