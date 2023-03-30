@@ -73,5 +73,7 @@ async def giveRole(ctx):
     await member.add_roles(role)
 
 
+#wow
+
 if __name__ == '__main__':
     bot.run(TOKEN)
