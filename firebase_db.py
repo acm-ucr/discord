@@ -93,4 +93,3 @@ class Firestore:
 
 
 firestore = Firestore()
-print(firestore.getUser("web<div>#4964", "dshah048@ucr.edu"))
