@@ -66,7 +66,9 @@ class Firestore:
         docs = query_ref.get()
 
         if len(docs) != 1:
-            return (False, {"error": "Too Many or Not Enough Documents Fetched"})
+            return (False, {
+                "error": "Too Many or Not Enough Documents Fetched"
+            })
 
         for doc in docs:
             user = {"id": doc.id, "data": doc.to_dict()}

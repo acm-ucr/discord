@@ -11,7 +11,7 @@ class Guild:
         GRADUATE_ROLE = os.getenv('DISCORD_GRADUATE_ROLE')
         UNDERGRADUATE_ROLE = os.getenv('DISCORD_UNDERGRADUATE_ROLE')
         FACULTY_ROLE = os.getenv('DISCORD_FACULTY_ROLE')
-        
+
         GUILD = os.getenv('DISCORD_GUILD')
 
         self.server = None
@@ -37,8 +37,10 @@ class Guild:
         elif affiliation == "faculty":
             affiliation_role_id = self.faculty_role_id
 
-        return [self.server.get_role(self.verified_role_id), self.server.get_role(affiliation_role_id)]
-        
+        return [
+            self.server.get_role(self.verified_role_id),
+            self.server.get_role(affiliation_role_id)
+        ]
 
     def get_guild(self) -> int:
         return self.guild_id
