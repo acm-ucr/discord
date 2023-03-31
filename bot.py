@@ -12,7 +12,7 @@ from guild import Guild
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(command_prefix = "!", intents=discord.Intents.all())
+bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
 FIRESTORE = Firestore()
 SENDGRID = Sendgrid()
@@ -33,12 +33,17 @@ async def on_ready():
 @bot.tree.command(name="verify")
 @app_commands.describe(name="Full Name", email="UCR Email")
 @app_commands.choices(affiliation=[
-        app_commands.Choice(name="Undergraduate", value="undergraduate"),
-        app_commands.Choice(name="Graduate", value="graduate"),
-        app_commands.Choice(name="Alumni", value="alumni"),
-        app_commands.Choice(name="Faculty", value="faculty"),
-        ])
-async def verify(ctx: discord.Interaction, name: str, email: str, affiliation: app_commands.Choice[str],) -> None:
+    app_commands.Choice(name="Undergraduate", value="undergraduate"),
+    app_commands.Choice(name="Graduate", value="graduate"),
+    app_commands.Choice(name="Alumni", value="alumni"),
+    app_commands.Choice(name="Faculty", value="faculty"),
+])
+async def verify(
+    ctx: discord.Interaction,
+    name: str,
+    email: str,
+    affiliation: app_commands.Choice[str],
+) -> None:
     name = name.strip()
     if not re.search("[a-zA-Z]\s[a-zA-Z]", name):
         await ctx.response.send_message(
@@ -71,7 +76,7 @@ async def verify(ctx: discord.Interaction, name: str, email: str, affiliation: a
 
 @bot.tree.command(name="code")
 @app_commands.describe(code="8 Character Code Sent Via Email")
-async def code(ctx: discord.Interaction, code: str):
+async def code(ctx: discord.Interaction, code: str) -> None:
     if not re.search("\w{8}", code):
         await ctx.response.send_message(
             "The provided code is not 8 characters long 😭!", ephemeral=True)
@@ -89,8 +94,8 @@ async def code(ctx: discord.Interaction, code: str):
     except Exception as error:
         await ctx.response.send_message("Failed verification 😭",
                                         ephemeral=True)
-        print(error)    
-        
+        print(error)
+
 
 if __name__ == '__main__':
     bot.run(TOKEN)

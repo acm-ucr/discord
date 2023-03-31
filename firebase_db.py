@@ -52,7 +52,12 @@ class Firestore:
             user = {"id": doc.id, "data": doc.to_dict()}
 
         if user["data"]["uuid"] == uuid:
-            self.db_ref.document(user["id"]).update({'verified': True, "verified_at": datetime.now() })
+            self.db_ref.document(user["id"]).update({
+                'verified':
+                True,
+                "verified_at":
+                datetime.now()
+            })
             return True
         return False
 

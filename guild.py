@@ -10,8 +10,8 @@ class Guild:
         GUILD = os.getenv('DISCORD_GUILD')
 
         self.server = None
-        self.role_id = int(ROLE)
-        self.guild_id = int(GUILD)
+        self.role_id: int = int(ROLE)
+        self.guild_id: int = int(GUILD)
 
     def get_member(self, ctx):
         return self.server.get_member(ctx.user.id)
@@ -19,5 +19,5 @@ class Guild:
     def get_role(self):
         return self.server.get_role(self.role_id)
 
-    def get_guild(self):
+    def get_guild(self) -> int:
         return self.guild_id
