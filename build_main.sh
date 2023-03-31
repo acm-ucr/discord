@@ -14,5 +14,5 @@ then
 else
     pkill -9 -f bot.py
     pip3 install -r requirements.txt
-    python3 bot.py
+    nohup python3 -u bot.py &>> activity.log &
 fi
