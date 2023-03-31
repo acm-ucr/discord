@@ -21,14 +21,32 @@ class Firestore:
         db = firestore.client()
         self.db_ref = db.collection(u'users')
 
-    def getUser(self, discord):
-        query_ref = self.db_ref.where(u'discord', u'==', discord).limit(1)
+    def getUser(self, discord, email):
+        query_ref = self.db_ref.where(u'discord', u'==', discord)
+        discord_docs = query_ref.get()
 
-        docs = query_ref.get()
+        query_ref = self.db_ref.where(u'email', u'==', email)
+        email_docs = query_ref.get()
 
-        for doc in docs:
-            return doc.id, doc.to_dict()
-        return ("", {})
+        if len(discord_docs) == 0 and len(email_docs) == 0:
+            return ("", {})
+
+        if len(discord_docs) != 1 or len(email_docs) != 1:
+            return ("Too Many or Not Enough Documents Fetched", {})
+        
+        discord_id, email_id = "", ""
+        discord_doc = None
+
+        for doc in discord_docs:
+            discord_id = doc.id
+            discord_doc = doc.to_dict()
+        for doc in email_docs:
+            email_id = doc.id
+        
+        if discord_id == email_id:
+            return (discord_id, discord_doc)
+        else:
+            return ("Too Many or Not Enough Documents Fetched", {})
 
     def createUser(self, email, name, discord, uuid, affiliation):
         data = {
@@ -70,3 +88,6 @@ class Firestore:
     #         user = {"id": doc.id, "data": doc.to_dict()}
 
     #     self.db_ref.document(user["id"]).update({'email': email})
+
+firestore = Firestore()
+print(firestore.getUser("web<div>#4964", "dshah048@ucr.edu"))

@@ -58,7 +58,7 @@ async def verify(
 
     discord = str(ctx.user)
 
-    __, user_data = FIRESTORE.getUser(discord)
+    user_id, user_data = FIRESTORE.getUser(discord, email)
 
     if user_data == {}:
         uuid = shortuuid.ShortUUID().random(length=8)
@@ -67,6 +67,10 @@ async def verify(
 
         await ctx.response.send_message(
             f"Hi **{name}** your verification code is sent to your email at **{email}** \nPlease send the verification code in this format: `!code <8 Character Code> 😇`",
+            ephemeral=True)
+    elif user_id == "Too Many or Not Enough Documents Fetched":
+        await ctx.response.send_message(
+            f"There is an error with the number of accounts associated with this Discord or Email. Please contact an ACM officer for further assistance",
             ephemeral=True)
     else:
         await ctx.response.send_message(
