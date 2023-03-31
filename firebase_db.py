@@ -62,9 +62,11 @@ class Firestore:
         self.db_ref.add(data)
 
     def verifyUser(self, discord, uuid):
-        query_ref = self.db_ref.where(u'discord', u'==', discord).limit(1)
-
+        query_ref = self.db_ref.where(u'discord', u'==', discord)
         docs = query_ref.get()
+
+        if len(docs) != 1:
+            return (False, "Too Many or Not Enough Documents Fetched")
 
         for doc in docs:
             user = {"id": doc.id, "data": doc.to_dict()}
@@ -76,8 +78,8 @@ class Firestore:
                 "verified_at":
                 datetime.now()
             })
-            return True
-        return False
+            return (True, "")
+        return (False, "")
 
     # def updateEmail(self, discord, email):
     #     query_ref = self.db_ref.where(u'discord', u'==', discord).limit(1)

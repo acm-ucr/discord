@@ -86,7 +86,13 @@ async def code(ctx: discord.Interaction, code: str) -> None:
             "The provided code is not 8 characters long 😭!", ephemeral=True)
         return
     try:
-        if FIRESTORE.verifyUser(str(ctx.user), code):
+        verified, error = FIRESTORE.verifyUser(str(ctx.user), code)
+        if error == "Too Many or Not Enough Documents Fetched":
+            await ctx.response.send_message(
+            f"There is an error with the number of accounts associated with this Discord or Email. Please contact an ACM officer for further assistance",
+            ephemeral=True)
+            return  
+        if verified:
             member = GUILD.get_member(ctx)
             role = GUILD.get_role()
             await member.add_roles(role)
