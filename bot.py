@@ -12,7 +12,7 @@ from guild import Guild
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(intents=discord.Intents.all())
+bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
 FIRESTORE = Firestore()
 SENDGRID = Sendgrid()
@@ -22,7 +22,8 @@ GUILD = Guild()
 @bot.event
 async def on_ready():
     for guild in bot.guilds:
-        GUILD.server = guild
+        if guild.id == GUILD.get_guild():
+            GUILD.server = guild
     try:
         await bot.tree.sync()
     except Exception as e:
@@ -31,8 +32,18 @@ async def on_ready():
 
 @bot.tree.command(name="verify")
 @app_commands.describe(name="Full Name", email="UCR Email")
-async def verify(ctx: discord.Interaction, name: str, email: str) -> None:
-
+@app_commands.choices(affiliation=[
+    app_commands.Choice(name="Undergraduate", value="undergraduate"),
+    app_commands.Choice(name="Graduate", value="graduate"),
+    app_commands.Choice(name="Alumni", value="alumni"),
+    app_commands.Choice(name="Faculty", value="faculty"),
+])
+async def verify(
+    ctx: discord.Interaction,
+    name: str,
+    email: str,
+    affiliation: app_commands.Choice[str],
+) -> None:
     name = name.strip()
     if not re.search("[a-zA-Z]\s[a-zA-Z]", name):
         await ctx.response.send_message(
@@ -47,42 +58,53 @@ async def verify(ctx: discord.Interaction, name: str, email: str) -> None:
 
     discord = str(ctx.user)
 
-    __, user_data = FIRESTORE.getUser(discord)
+    user_id, user_data = FIRESTORE.getUser(discord, email)
 
     if user_data == {}:
-        uuid = shortuuid.ShortUUID().random(length=16)
+        uuid = shortuuid.ShortUUID().random(length=8)
         SENDGRID.sendEmail(email, uuid)
-        FIRESTORE.createUser(email, name, discord, uuid)
+        FIRESTORE.createUser(email, name, discord, uuid, affiliation.value)
 
         await ctx.response.send_message(
-            f"Hi **{name}** your verification code is sent to your email at **{email}** \nPlease send the verification code in this format: `!code <16 Character Code> 😇`",
+            f"Hi **{name}** your verification code is sent to your email at **{email}** \nPlease send the verification code in this format: `!code <8 Character Code> 😇`",
+            ephemeral=True)
+    elif user_id == "Too Many or Not Enough Documents Fetched":
+        await ctx.response.send_message(
+            f"There is an error with the number of accounts associated with this Discord or Email. Please contact an ACM officer for further assistance",
+            ephemeral=True)
+    else:
+        await ctx.response.send_message(
+            f"Hi **{name}** your verification code has already been sent to your email at **{email}** \nPlease check your email and send the verification code in this format: `!code <8 Character Code> 😇`",
             ephemeral=True)
 
 
 @bot.tree.command(name="code")
-@app_commands.describe(code="16 Character Code Sent Via Email")
-async def code(ctx: discord.interactions, code: str):
-    if not re.search("\w{16}", code):
+@app_commands.describe(code="8 Character Code Sent Via Email")
+async def code(ctx: discord.Interaction, code: str) -> None:
+    if not re.search("\w{8}", code):
         await ctx.response.send_message(
-            "The provided code is not 16 characters long 😭!", ephemeral=True)
+            "The provided code is not 8 characters long 😭!", ephemeral=True)
         return
     try:
-        if FIRESTORE.verifyUser(str(ctx.user), code):
+        verified, error = FIRESTORE.verifyUser(str(ctx.user), code)
+        if error == "Too Many or Not Enough Documents Fetched":
+            await ctx.response.send_message(
+                f"There is an error with the number of accounts associated with this Discord or Email. Please contact an ACM officer for further assistance",
+                ephemeral=True)
+            return
+        if verified:
+            member = GUILD.get_member(ctx)
+            role = GUILD.get_role()
+            await member.add_roles(role)
             await ctx.response.send_message("Successfully verified 🥳!!",
                                             ephemeral=True)
-            await giveRole(ctx)
         else:
             await ctx.response.send_message(
                 "We were unable to verify your account 😭!", ephemeral=True)
     except Exception as error:
         await ctx.response.send_message("Failed verification 😭",
                                         ephemeral=True)
-
-
-async def giveRole(ctx):
-    member = GUILD.get_member(ctx)
-    role = GUILD.get_role()
-    await member.add_roles(role)
+        print(error)
 
 
 if __name__ == '__main__':
