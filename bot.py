@@ -60,7 +60,12 @@ async def verify(
 
     user_id, user_data = FIRESTORE.getUser(discord, email)
 
-    if user_data == {}:
+    if user_id == "Too Many or Not Enough Documents Fetched":
+        await ctx.response.send_message(
+            f"There is an error with the number of accounts associated with this Discord or Email. Please contact an ACM officer for further assistance",
+            ephemeral=True)
+
+    elif user_data == {}:
         uuid = shortuuid.ShortUUID().random(length=8)
         SENDGRID.sendEmail(email, uuid)
         FIRESTORE.createUser(email, name, discord, uuid, affiliation.value)
@@ -68,10 +73,7 @@ async def verify(
         await ctx.response.send_message(
             f"Hi **{name}** your verification code is sent to your email at **{email}** \nPlease send the verification code in this format: `!code <8 Character Code> 😇`",
             ephemeral=True)
-    elif user_id == "Too Many or Not Enough Documents Fetched":
-        await ctx.response.send_message(
-            f"There is an error with the number of accounts associated with this Discord or Email. Please contact an ACM officer for further assistance",
-            ephemeral=True)
+
     else:
         await ctx.response.send_message(
             f"Hi **{name}** your verification code has already been sent to your email at **{email}** \nPlease check your email and send the verification code in this format: `!code <8 Character Code> 😇`",
@@ -86,16 +88,18 @@ async def code(ctx: discord.Interaction, code: str) -> None:
             "The provided code is not 8 characters long 😭!", ephemeral=True)
         return
     try:
-        verified, error = FIRESTORE.verifyUser(str(ctx.user), code)
-        if error == "Too Many or Not Enough Documents Fetched":
+        verified, result = FIRESTORE.verifyUser(str(ctx.user), code)
+        if result.get("error",
+                      "") == "Too Many or Not Enough Documents Fetched":
             await ctx.response.send_message(
                 f"There is an error with the number of accounts associated with this Discord or Email. Please contact an ACM officer for further assistance",
                 ephemeral=True)
             return
         if verified:
             member = GUILD.get_member(ctx)
-            role = GUILD.get_role()
-            await member.add_roles(role)
+            verified_role, affliation_role = GUILD.get_roles(
+                result["affiliation"])
+            await member.add_roles(verified_role, affliation_role)
             await ctx.response.send_message("Successfully verified 🥳!!",
                                             ephemeral=True)
         else:
