@@ -3,6 +3,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from dotenv import load_dotenv
+from datetime import datetime
 
 
 class Firestore:
@@ -29,13 +30,15 @@ class Firestore:
             return doc.id, doc.to_dict()
         return ("", {})
 
-    def createUser(self, email, name, discord, uuid):
+    def createUser(self, email, name, discord, uuid, affiliation):
         data = {
             "email": email,
             "name": name,
             "discord": discord,
             "uuid": uuid,
-            "verified": False
+            "affiliation": affiliation,
+            "verified": False,
+            "created_at": datetime.now()
         }
 
         self.db_ref.add(data)
@@ -49,16 +52,16 @@ class Firestore:
             user = {"id": doc.id, "data": doc.to_dict()}
 
         if user["data"]["uuid"] == uuid:
-            self.db_ref.document(user["id"]).update({'verified': True})
+            self.db_ref.document(user["id"]).update({'verified': True, "verified_at": datetime.now() })
             return True
         return False
 
-    def updateEmail(self, discord, email):
-        query_ref = self.db_ref.where(u'discord', u'==', discord).limit(1)
+    # def updateEmail(self, discord, email):
+    #     query_ref = self.db_ref.where(u'discord', u'==', discord).limit(1)
 
-        docs = query_ref.get()
+    #     docs = query_ref.get()
 
-        for doc in docs:
-            user = {"id": doc.id, "data": doc.to_dict()}
+    #     for doc in docs:
+    #         user = {"id": doc.id, "data": doc.to_dict()}
 
-        self.db_ref.document(user["id"]).update({'email': email})
+    #     self.db_ref.document(user["id"]).update({'email': email})

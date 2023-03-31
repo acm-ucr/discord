@@ -32,8 +32,13 @@ async def on_ready():
 
 @bot.tree.command(name="verify")
 @app_commands.describe(name="Full Name", email="UCR Email")
-async def verify(ctx: discord.Interaction, name: str, email: str) -> None:
-
+@app_commands.choices(affiliation=[
+        app_commands.Choice(name="Undergraduate", value="undergraduate"),
+        app_commands.Choice(name="Graduate", value="graduate"),
+        app_commands.Choice(name="Alumni", value="alumni"),
+        app_commands.Choice(name="Faculty", value="faculty"),
+        ])
+async def verify(ctx: discord.Interaction, name: str, email: str, affiliation: app_commands.Choice[str],) -> None:
     name = name.strip()
     if not re.search("[a-zA-Z]\s[a-zA-Z]", name):
         await ctx.response.send_message(
@@ -53,7 +58,7 @@ async def verify(ctx: discord.Interaction, name: str, email: str) -> None:
     if user_data == {}:
         uuid = shortuuid.ShortUUID().random(length=8)
         SENDGRID.sendEmail(email, uuid)
-        FIRESTORE.createUser(email, name, discord, uuid)
+        FIRESTORE.createUser(email, name, discord, uuid, affiliation.value)
 
         await ctx.response.send_message(
             f"Hi **{name}** your verification code is sent to your email at **{email}** \nPlease send the verification code in this format: `!code <8 Character Code> 😇`",
@@ -73,7 +78,9 @@ async def code(ctx: discord.Interaction, code: str):
         return
     try:
         if FIRESTORE.verifyUser(str(ctx.user), code):
-            await giveRole(ctx)
+            member = GUILD.get_member(ctx)
+            role = GUILD.get_role()
+            await member.add_roles(role)
             await ctx.response.send_message("Successfully verified 🥳!!",
                                             ephemeral=True)
         else:
@@ -82,14 +89,8 @@ async def code(ctx: discord.Interaction, code: str):
     except Exception as error:
         await ctx.response.send_message("Failed verification 😭",
                                         ephemeral=True)
-        print(error)
-
-
-async def giveRole(ctx):
-    member = GUILD.get_member(ctx)
-    role = GUILD.get_role()
-    await member.add_roles(role)
-
+        print(error)    
+        
 
 if __name__ == '__main__':
     bot.run(TOKEN)
