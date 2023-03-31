@@ -31,7 +31,7 @@ class Firestore:
         if len(discord_docs) == 0 and len(email_docs) == 0:
             return ("", {})
 
-        if len(discord_docs) != 1 or len(email_docs) != 1:
+        if len(discord_docs) != 1 and len(email_docs) != 1:
             return ("Too Many or Not Enough Documents Fetched", {})
 
         discord_id, email_id = "", ""
@@ -66,7 +66,7 @@ class Firestore:
         docs = query_ref.get()
 
         if len(docs) != 1:
-            return (False, "Too Many or Not Enough Documents Fetched")
+            return (False, {"error": "Too Many or Not Enough Documents Fetched"})
 
         for doc in docs:
             user = {"id": doc.id, "data": doc.to_dict()}
@@ -78,8 +78,8 @@ class Firestore:
                 "verified_at":
                 datetime.now()
             })
-            return (True, "")
-        return (False, "")
+            return (True, user["data"])
+        return (False, {})
 
     # def updateEmail(self, discord, email):
     #     query_ref = self.db_ref.where(u'discord', u'==', discord).limit(1)
@@ -90,6 +90,3 @@ class Firestore:
     #         user = {"id": doc.id, "data": doc.to_dict()}
 
     #     self.db_ref.document(user["id"]).update({'email': email})
-
-
-firestore = Firestore()
