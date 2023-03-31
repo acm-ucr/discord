@@ -33,7 +33,7 @@ class Firestore:
 
         if len(discord_docs) != 1 or len(email_docs) != 1:
             return ("Too Many or Not Enough Documents Fetched", {})
-        
+
         discord_id, email_id = "", ""
         discord_doc = None
 
@@ -42,7 +42,7 @@ class Firestore:
             discord_doc = doc.to_dict()
         for doc in email_docs:
             email_id = doc.id
-        
+
         if discord_id == email_id:
             return (discord_id, discord_doc)
         else:
@@ -90,6 +90,7 @@ class Firestore:
     #         user = {"id": doc.id, "data": doc.to_dict()}
 
     #     self.db_ref.document(user["id"]).update({'email': email})
+
 
 firestore = Firestore()
 print(firestore.getUser("web<div>#4964", "dshah048@ucr.edu"))

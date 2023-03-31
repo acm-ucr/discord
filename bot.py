@@ -89,9 +89,9 @@ async def code(ctx: discord.Interaction, code: str) -> None:
         verified, error = FIRESTORE.verifyUser(str(ctx.user), code)
         if error == "Too Many or Not Enough Documents Fetched":
             await ctx.response.send_message(
-            f"There is an error with the number of accounts associated with this Discord or Email. Please contact an ACM officer for further assistance",
-            ephemeral=True)
-            return  
+                f"There is an error with the number of accounts associated with this Discord or Email. Please contact an ACM officer for further assistance",
+                ephemeral=True)
+            return
         if verified:
             member = GUILD.get_member(ctx)
             role = GUILD.get_role()
