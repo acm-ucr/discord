@@ -12,7 +12,7 @@ from guild import Guild
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(intents=discord.Intents.all())
+bot = commands.Bot(command_prefix = "!", intents=discord.Intents.all())
 
 FIRESTORE = Firestore()
 SENDGRID = Sendgrid()
@@ -22,7 +22,8 @@ GUILD = Guild()
 @bot.event
 async def on_ready():
     for guild in bot.guilds:
-        GUILD.server = guild
+        if guild.id == GUILD.get_guild():
+            GUILD.server = guild
     try:
         await bot.tree.sync()
     except Exception as e:
@@ -50,33 +51,38 @@ async def verify(ctx: discord.Interaction, name: str, email: str) -> None:
     __, user_data = FIRESTORE.getUser(discord)
 
     if user_data == {}:
-        uuid = shortuuid.ShortUUID().random(length=16)
+        uuid = shortuuid.ShortUUID().random(length=8)
         SENDGRID.sendEmail(email, uuid)
         FIRESTORE.createUser(email, name, discord, uuid)
 
         await ctx.response.send_message(
-            f"Hi **{name}** your verification code is sent to your email at **{email}** \nPlease send the verification code in this format: `!code <16 Character Code> 😇`",
+            f"Hi **{name}** your verification code is sent to your email at **{email}** \nPlease send the verification code in this format: `!code <8 Character Code> 😇`",
+            ephemeral=True)
+    else:
+        await ctx.response.send_message(
+            f"Hi **{name}** your verification code has already been sent to your email at **{email}** \nPlease check your email and send the verification code in this format: `!code <8 Character Code> 😇`",
             ephemeral=True)
 
 
 @bot.tree.command(name="code")
-@app_commands.describe(code="16 Character Code Sent Via Email")
-async def code(ctx: discord.interactions, code: str):
-    if not re.search("\w{16}", code):
+@app_commands.describe(code="8 Character Code Sent Via Email")
+async def code(ctx: discord.Interaction, code: str):
+    if not re.search("\w{8}", code):
         await ctx.response.send_message(
-            "The provided code is not 16 characters long 😭!", ephemeral=True)
+            "The provided code is not 8 characters long 😭!", ephemeral=True)
         return
     try:
         if FIRESTORE.verifyUser(str(ctx.user), code):
+            await giveRole(ctx)
             await ctx.response.send_message("Successfully verified 🥳!!",
                                             ephemeral=True)
-            await giveRole(ctx)
         else:
             await ctx.response.send_message(
                 "We were unable to verify your account 😭!", ephemeral=True)
     except Exception as error:
         await ctx.response.send_message("Failed verification 😭",
                                         ephemeral=True)
+        print(error)
 
 
 async def giveRole(ctx):

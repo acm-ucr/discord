@@ -14,7 +14,7 @@ class Guild:
         self.guild_id = int(GUILD)
 
     def get_member(self, ctx):
-        return self.server.get_member(ctx.author.id)
+        return self.server.get_member(ctx.user.id)
 
     def get_role(self):
         return self.server.get_role(self.role_id)
