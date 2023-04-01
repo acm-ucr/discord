@@ -71,7 +71,7 @@ async def verify(
         FIRESTORE.createUser(email, name, discord, uuid, affiliation.value)
 
         await ctx.response.send_message(
-            f"Hi **{name}** your verification code is sent to your email at **{email}** \nPlease send the verification code in this format: `!code <8 Character Code> 😇`",
+            f"Hi **{name}** your verification code is sent to your email at **{email}** \nPlease send the verification code in this format: `/code <8 Character Code> 😇`",
             ephemeral=True)
 
     else:
