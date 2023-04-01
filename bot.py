@@ -67,7 +67,7 @@ async def verify(
 
     elif user_data == {}:
         uuid = shortuuid.ShortUUID().random(length=8)
-        SENDGRID.sendEmail(email, uuid)
+        SENDGRID.sendEmail(email, name, discord, uuid)
         FIRESTORE.createUser(email, name, discord, uuid, affiliation.value)
 
         await ctx.response.send_message(
@@ -76,7 +76,7 @@ async def verify(
 
     else:
         await ctx.response.send_message(
-            f"Hi **{name}** your verification code has already been sent to your email at **{email}** \nPlease check your email and send the verification code in this format: `!code <8 Character Code> 😇`",
+            f"Hi **{name}**, this email has already been sent a verification email at {email}. Please check your email for a verification code! If you require assistance please contact an ACM officer!",
             ephemeral=True)
 
 
