@@ -32,7 +32,7 @@ class Sendgrid:
         <br/><br/>
         If this is not the correct email and discord association, please contact an ACM officer immediately. You can contact us at acm@cs.ucr.edu. 
         <br/><br/>
-        Thank you
+        Thank you<br/>
         ACM at UCR
 
         """
