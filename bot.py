@@ -76,7 +76,8 @@ async def verify(
 
     else:
         await ctx.response.send_message(
-            f"Hi **{name}**, this email has already been sent a verification email at {email}. Please check your email for a verification code! If you require assistance please contact an ACM officer!", ephemeral=True)
+            f"Hi **{name}**, this email has already been sent a verification email at {email}. Please check your email for a verification code! If you require assistance please contact an ACM officer!",
+            ephemeral=True)
 
 
 @bot.tree.command(name="code")

@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
+
 class Sendgrid:
 
     def __init__(self):
@@ -20,7 +21,7 @@ class Sendgrid:
             self.sendgrid.send(message)
         except Exception as e:
             print(e)
-    
+
     def generateMessage(self, uuid, name, discord):
         html_message = f"""
         Hello <b>{name}</b>,
@@ -35,5 +36,5 @@ class Sendgrid:
         ACM at UCR
 
         """
-        
+
         return html_message
