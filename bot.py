@@ -51,7 +51,7 @@ async def verify(
         return
 
     email = email.strip().lower()
-    if not re.search("[a-z]{3,5}\d{3}@ucr.edu", email):
+    if not re.search("[a-z]{3,5}\d{3,4}@ucr.edu", email):
         await ctx.response.send_message("Please use your UCR email 🥺",
                                         ephemeral=True)
         return
