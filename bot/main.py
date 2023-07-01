@@ -5,9 +5,9 @@ import shortuuid
 from discord.ext import commands
 from discord import app_commands
 from dotenv import load_dotenv
-from firebase_db import Firestore
-from sendgrid_email import Sendgrid
-from guild import Guild
+from bot.firebase_db import Firestore
+from bot.sendgrid_email import Sendgrid
+from bot.server import Server
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -16,7 +16,7 @@ bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
 FIRESTORE = Firestore()
 SENDGRID = Sendgrid()
-GUILD = Guild()
+GUILD = Server()
 
 
 @bot.event
@@ -111,5 +111,9 @@ async def code(ctx: discord.Interaction, code: str) -> None:
         print(error)
 
 
-if __name__ == '__main__':
+def main():
     bot.run(TOKEN)
+
+
+if __name__ == '__main__':
+    main()

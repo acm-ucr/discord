@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 
 
-class Guild:
+class Server:
 
     def __init__(self):
         load_dotenv()
@@ -11,7 +11,6 @@ class Guild:
         GRADUATE_ROLE = os.getenv('DISCORD_GRADUATE_ROLE')
         UNDERGRADUATE_ROLE = os.getenv('DISCORD_UNDERGRADUATE_ROLE')
         FACULTY_ROLE = os.getenv('DISCORD_FACULTY_ROLE')
-
         GUILD = os.getenv('DISCORD_GUILD')
 
         self.server = None

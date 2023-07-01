@@ -1,5 +1,0 @@
-discord.py
-shortuuid
-python-dotenv
-firebase_admin
-sendgrid
