@@ -20,6 +20,7 @@ GUILD = Guild()
 
 DISAPPOINTMENT_GIF = "nhttps://media.tenor.com/SaUF80F_n34AAAAC/gordon-ramsey-wtf.gif"
 
+
 @bot.event
 async def on_ready():
     for guild in bot.guilds:
@@ -30,33 +31,48 @@ async def on_ready():
     except Exception as e:
         print(e)
 
+
 @bot.event
 async def on_member_join(member):
     if member.guild == GUILD.server:
         embed = discord.Embed(
             title="Welcome to ACM!",
-            description="To gain access to the full server, please run the following slash commands.",
+            description=
+            "To gain access to the full server, please run the following slash commands.",
             color=discord.Color.blue()  # Set the color of the embed (optional)
         )
 
         # Add fields to the embed
-        embed.add_field(name="/verify", value="You will recieve a 8 digit code in your email", inline=False)
-        embed.add_field(name="/code", value="Please enter that code in this command for verification", inline=True)
+        embed.add_field(name="/verify",
+                        value="You will recieve a 8 digit code in your email",
+                        inline=False)
+        embed.add_field(
+            name="/code",
+            value="Please enter that code in this command for verification",
+            inline=True)
 
         await member.send(embed=embed)
 
+
 @bot.event
 async def on_message(message):
-    if isinstance(message.channel, discord.DMChannel) and message.author != bot.user:
-        if "verify" in message.content.lower() or "code" in message.content.lower():
-            await message.channel.send(f"With all due respect, you had one job: use the slash commands.\n{DISAPPOINTMENT_GIF}")
+    if isinstance(message.channel,
+                  discord.DMChannel) and message.author != bot.user:
+        if "verify" in message.content.lower(
+        ) or "code" in message.content.lower():
+            await message.channel.send(
+                f"With all due respect, you had one job: use the slash commands.\n{DISAPPOINTMENT_GIF}"
+            )
+
 
 async def isDM(ctx):
     if not isinstance(ctx.channel, discord.DMChannel):
-        await ctx.response.send_message("DM me this command to use it.", ephemeral=True)
+        await ctx.response.send_message("DM me this command to use it.",
+                                        ephemeral=True)
         return False
     else:
         return True
+
 
 @bot.tree.command(name="verify")
 @app_commands.describe(name="Full Name", email="UCR Email")
