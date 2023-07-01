@@ -19,7 +19,6 @@ yapf = "^0.40.1"
 
 [tool.poetry.scripts]
 bot = "bot.main:main"
-pylint = "pylint ."
 
 [build-system]
 requires = ["poetry-core"]
