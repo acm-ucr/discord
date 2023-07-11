@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 firebase_creds.json
 email_creds.json
 .env
 __pycache__
 .DS_Store
 poetry.lock
+=======
+firebase_creds.json
+email_creds.json
+.env
+__pycache__
+.DS_Store
+>>>>>>> 85a674828f59c36877545e7f78b29bac70976b0e
