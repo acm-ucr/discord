@@ -31,6 +31,7 @@ async def on_ready():
     except Exception as e:
         print(e)
 
+
 @bot.tree.command(name="secrets")
 @app_commands.choices(project=[
     app_commands.Choice(name="Discord Bot", value="Discord Bot"),
@@ -71,7 +72,7 @@ async def secrets(
             await ctx.response.send_message("Wrong role!", ephemeral=True)
     return
 
-  
+
 @bot.event
 async def on_member_join(member):
     if member.guild == GUILD.server:
