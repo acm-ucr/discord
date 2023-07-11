@@ -29,29 +29,6 @@ async def on_ready():
     except Exception as e:
         print(e)
 
-
-@bot.command()
-@commands.has_any_role("R'Mate", 'bitByBIT', 'Membership Portal',
-                       'Discord Bot')
-async def secret(ctx):
-    user = ctx.author
-    user_roles = user.roles
-    for role in user_roles:
-        if role.name == "R'Mate":
-            await user.send("rmate fakesecret")
-            return
-        elif role.name == "Membership Portal":
-            await user.send("mem fakesecret")
-            return
-        elif role.name == "bitByBIT":
-            await user.send("bit fakesecret")
-            return
-        elif role.name == "Discord Bot":
-            await user.send("discordbot fakesecret")
-            return
-    await user.send("didn't pass")
-
-
 @bot.tree.command(name="secrets")
 @app_commands.choices(project=[
     app_commands.Choice(name="Discord Bot", value="Discord Bot"),
