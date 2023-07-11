@@ -31,38 +31,6 @@ async def on_ready():
 
 
 @bot.command()
-@commands.has_any_role('Discord Bot')
-async def discordbotsecrets(ctx):
-    user = ctx.author
-    await user.send("Discord Bot fakesecret")
-    return
-
-
-@bot.command()
-@commands.has_any_role('Membership Portal')
-async def membershipportalsecrets(ctx):
-    user = ctx.author
-    await user.send("Membership fakesecret")
-    return
-
-
-@bot.command()
-@commands.has_any_role("R'Mate")
-async def rmatesecrets(ctx):
-    user = ctx.author
-    await user.send("R'Mate fakesecret")
-    return
-
-
-@bot.command()
-@commands.has_any_role('bitByBIT')
-async def bitbybitsecrets(ctx):
-    user = ctx.author
-    await user.send("bitByBIT fakesecret")
-    return
-
-
-@bot.command()
 @commands.has_any_role("R'Mate", 'bitByBIT', 'Membership Portal',
                        'Discord Bot')
 async def secret(ctx):
