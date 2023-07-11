@@ -37,6 +37,7 @@ async def discordbotsecrets(ctx):
     await user.send("Discord Bot fakesecret")
     return
 
+
 @bot.command()
 @commands.has_any_role('Membership Portal')
 async def membershipportalsecrets(ctx):
@@ -44,12 +45,14 @@ async def membershipportalsecrets(ctx):
     await user.send("Membership fakesecret")
     return
 
+
 @bot.command()
 @commands.has_any_role("R'Mate")
 async def rmatesecrets(ctx):
     user = ctx.author
     await user.send("R'Mate fakesecret")
     return
+
 
 @bot.command()
 @commands.has_any_role('bitByBIT')
@@ -59,9 +62,9 @@ async def bitbybitsecrets(ctx):
     return
 
 
-
 @bot.command()
-@commands.has_any_role("R'Mate", 'bitByBIT','Membership Portal','Discord Bot')
+@commands.has_any_role("R'Mate", 'bitByBIT', 'Membership Portal',
+                       'Discord Bot')
 async def secret(ctx):
     user = ctx.author
     user_roles = user.roles
@@ -82,34 +85,44 @@ async def secret(ctx):
 
 
 @bot.tree.command(name="secrets")
-@app_commands.choices(project = [app_commands.Choice(name="Discord Bot", value="Discord Bot"),
+@app_commands.choices(project=[
+    app_commands.Choice(name="Discord Bot", value="Discord Bot"),
     app_commands.Choice(name="bitByBIT", value="bitByBIT"),
     app_commands.Choice(name="R'Mate", value="R'Mate"),
-    app_commands.Choice(name="Membership Portal", value="Membership Portal"),]) 
-@commands.has_any_role("R'Mate", 'bitByBIT','Membership Portal','Discord Bot')
-async def secrets(ctx: discord.Interaction, project: app_commands.Choice[str],) -> None:
+    app_commands.Choice(name="Membership Portal", value="Membership Portal"),
+])
+@commands.has_any_role("R'Mate", 'bitByBIT', 'Membership Portal',
+                       'Discord Bot')
+async def secrets(
+    ctx: discord.Interaction,
+    project: app_commands.Choice[str],
+) -> None:
     user_guilds = ctx.user.mutual_guilds
     for guild in user_guilds:
         if (guild.id == 984881520697278514):
             user = guild.get_member(ctx.user.id)
             user_roles = user.roles
     for role in user_roles:
-        if ((role.name == project.value) and (role.name == "Discord Bot") ):
-            await ctx.response.send_message("DISCORD BOT FAKE SECRET", ephemeral=True)
+        if ((role.name == project.value) and (role.name == "Discord Bot")):
+            await ctx.response.send_message("DISCORD BOT FAKE SECRET",
+                                            ephemeral=True)
             return
-        elif ((role.name == project.value) and (role.name == "bitByBIT") ):
-            await ctx.response.send_message("bitByBIT FAKE SECRET", ephemeral=True)
+        elif ((role.name == project.value) and (role.name == "bitByBIT")):
+            await ctx.response.send_message("bitByBIT FAKE SECRET",
+                                            ephemeral=True)
             return
-        elif ((role.name == project.value) and (role.name == "R'Mate") ):
-            await ctx.response.send_message("R'Mate FAKE SECRET", ephemeral=True)
+        elif ((role.name == project.value) and (role.name == "R'Mate")):
+            await ctx.response.send_message("R'Mate FAKE SECRET",
+                                            ephemeral=True)
             return
-        elif ((role.name == project.value) and (role.name == "Membership Portal") ):
-            await ctx.response.send_message("Membership Portal FAKE SECRET", ephemeral=True)
+        elif ((role.name == project.value)
+              and (role.name == "Membership Portal")):
+            await ctx.response.send_message("Membership Portal FAKE SECRET",
+                                            ephemeral=True)
             return
         else:
             await ctx.response.send_message("Wrong role!", ephemeral=True)
     return
-
 
 
 @bot.tree.command(name="verify")
