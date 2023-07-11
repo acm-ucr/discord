@@ -29,6 +29,7 @@ async def on_ready():
     except Exception as e:
         print(e)
 
+
 @bot.tree.command(name="secrets")
 @app_commands.choices(project=[
     app_commands.Choice(name="Discord Bot", value="Discord Bot"),
