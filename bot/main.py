@@ -18,6 +18,8 @@ FIRESTORE = Firestore()
 SENDGRID = Sendgrid()
 GUILD = Server()
 
+DISAPPOINTMENT_GIF = "https://media.tenor.com/SaUF80F_n34AAAAC/gordon-ramsey-wtf.gif"
+
 
 @bot.event
 async def on_ready():
@@ -28,7 +30,6 @@ async def on_ready():
         await bot.tree.sync()
     except Exception as e:
         print(e)
-
 
 @bot.tree.command(name="secrets")
 @app_commands.choices(project=[
@@ -70,6 +71,48 @@ async def secrets(
             await ctx.response.send_message("Wrong role!", ephemeral=True)
     return
 
+  
+@bot.event
+async def on_member_join(member):
+    if member.guild == GUILD.server:
+        embed = discord.Embed(
+            title="Welcome to ACM!",
+            description=
+            "To gain access to the full server, please run the following slash commands.",
+            color=discord.Color.blue()  # Set the color of the embed (optional)
+        )
+
+        # Add fields to the embed
+        embed.add_field(name="/verify",
+                        value="You will recieve a 8 digit code in your email",
+                        inline=False)
+        embed.add_field(
+            name="/code",
+            value="Please enter that code in this command for verification",
+            inline=True)
+
+        await member.send(embed=embed)
+
+
+@bot.event
+async def on_message(message):
+    if isinstance(message.channel,
+                  discord.DMChannel) and message.author != bot.user:
+        if "verify" in message.content.lower(
+        ) or "code" in message.content.lower():
+            await message.channel.send(
+                f"With all due respect, you had one job: use the slash commands.\n{DISAPPOINTMENT_GIF}"
+            )
+
+
+async def isDM(ctx):
+    if not isinstance(ctx.channel, discord.DMChannel):
+        await ctx.response.send_message("DM me this command to use it.",
+                                        ephemeral=True)
+        return False
+    else:
+        return True
+
 
 @bot.tree.command(name="verify")
 @app_commands.describe(name="Full Name", email="UCR Email")
@@ -85,6 +128,8 @@ async def verify(
     email: str,
     affiliation: app_commands.Choice[str],
 ) -> None:
+    if not await isDM(ctx):
+        return
     name = name.strip()
     if not re.search("[a-zA-Z]\s[a-zA-Z]", name):
         await ctx.response.send_message(
@@ -124,6 +169,8 @@ async def verify(
 @bot.tree.command(name="code")
 @app_commands.describe(code="8 Character Code Sent Via Email")
 async def code(ctx: discord.Interaction, code: str) -> None:
+    if not await isDM(ctx):
+        return
     if not re.search("\w{8}", code):
         await ctx.response.send_message(
             "The provided code is not 8 characters long 😭!", ephemeral=True)
