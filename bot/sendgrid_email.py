@@ -37,6 +37,7 @@ class Sendgrid:
     generateMessage(uuid, name, discord):
         Utilizes a format to generate an email to send using the uuid, name, and discord
     """
+
     def __init__(self):
         """
         Initiliazes the sendgrid API connection using the API key
