@@ -25,7 +25,6 @@ from dotenv import load_dotenv
 
 
 class Firestore:
-
     """
     A class used to manage Firebase database
     ...
@@ -105,6 +104,7 @@ class Firestore:
         if discord_id == email_id:
             return (discord_id, discord_doc)
         return ("Too Many or Not Enough Documents Fetched", {})
+
     #pylint: disable-msg=too-many-arguments
     def createUser(self, email, name, discord, uuid, affiliation):
         """
@@ -135,6 +135,7 @@ class Firestore:
         }
 
         self.db_ref.add(data)
+
     #pylint: enable-msg=too-many-arguments
 
     def verifyUser(self, discord, uuid):
