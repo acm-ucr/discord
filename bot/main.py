@@ -1,11 +1,11 @@
 """all commands of the bot"""
 import os
 import re
-import shortuuid
-from dotenv import load_dotenv
 import discord
+import shortuuid
 from discord.ext import commands
 from discord import app_commands
+from dotenv import load_dotenv
 from bot.firebase_db import Firestore
 from bot.sendgrid_email import Sendgrid
 from bot.server import Server
@@ -19,6 +19,7 @@ FIRESTORE = Firestore()
 SENDGRID = Sendgrid()
 GUILD = Server()
 
+DISAPPOINTMENT_GIF = "https://media.tenor.com/SaUF80F_n34AAAAC/gordon-ramsey-wtf.gif"
 
 @bot.event
 async def on_ready():
