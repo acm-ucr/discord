@@ -40,4 +40,4 @@ jobs:
           pip install yapf
       - name: Checking code formatting with YAPF
         run: |
-          yapf bot -dr
+          yapf -dr bot

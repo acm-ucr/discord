@@ -19,8 +19,6 @@ FIRESTORE = Firestore()
 SENDGRID = Sendgrid()
 GUILD = Server()
 
-DISAPPOINTMENT_GIF = "https://media.tenor.com/SaUF80F_n34AAAAC/gordon-ramsey-wtf.gif"
-
 
 @bot.event
 async def on_ready():
@@ -70,7 +68,7 @@ async def secrets(
                                             ephemeral=True)
             return
         if ((role.name == project.value)
-                and (role.name == "Membership Portal")):
+              and (role.name == "Membership Portal")):
             await ctx.response.send_message("Membership Portal FAKE SECRET",
                                             ephemeral=True)
             return
@@ -138,8 +136,6 @@ async def verify(
     affiliation: app_commands.Choice[str],
 ) -> None:
     """Gets information from the user, searches for them through firebase"""
-    if not await isDM(ctx):
-        return
     name = name.strip()
     if not re.search(r"[a-zA-Z]r\s[a-zA-Z]", name):
         await ctx.response.send_message(
@@ -159,7 +155,7 @@ async def verify(
     if user_id == "Too Many or Not Enough Documents Fetched":
         await ctx.response.send_message(
             "There is an error with the number of accounts associated with this Discord or Email."
-            " Please contact an ACM officer for further assistance",
+              " Please contact an ACM officer for further assistance",
             ephemeral=True)
 
     elif user_data == {}:
@@ -183,12 +179,12 @@ async def verify(
 
 @bot.tree.command(name="code")
 @app_commands.describe(code="8 Character Code Sent Via Email")
-async def code(ctx: discord.Interaction) -> None:
+async def code(ctx: discord.Interaction, codestring: str) -> None:
     """command for the verification code after user has submitted verify
     checks if the verification code fits code user submitted through try block"""
     if not await isDM(ctx):
         return
-    if not re.search(r"\w{8}", code):
+    if not re.search(r"\w{8}", codestring):
         await ctx.response.send_message(
             "The provided code is not 8 characters long 😭!", ephemeral=True)
         return
