@@ -70,7 +70,7 @@ async def secrets(
                                             ephemeral=True)
             return
         if ((role.name == project.value)
-              and (role.name == "Membership Portal")):
+                and (role.name == "Membership Portal")):
             await ctx.response.send_message("Membership Portal FAKE SECRET",
                                             ephemeral=True)
             return
@@ -156,7 +156,7 @@ async def verify(
     if user_id == "Too Many or Not Enough Documents Fetched":
         await ctx.response.send_message(
             "There is an error with the number of accounts associated with this Discord or Email."
-              " Please contact an ACM officer for further assistance",
+            " Please contact an ACM officer for further assistance",
             ephemeral=True)
 
     elif user_data == {}:
@@ -180,11 +180,9 @@ async def verify(
 
 @bot.tree.command(name="code")
 @app_commands.describe(code="8 Character Code Sent Via Email")
-async def code(ctx: discord.Interaction, codestring: str) -> None:
+async def code(ctx: discord.Interaction, code: str) -> None:
     """command for the verification code after user has submitted verify
     checks if the verification code fits code user submitted through try block"""
-    if not re.search(r"\w{8}", codestring):
-async def code(ctx: discord.Interaction, code: str) -> None:
     if not await isDM(ctx):
         return
     if not re.search("\w{8}", code):

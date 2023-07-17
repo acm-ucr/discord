@@ -1,8 +1,11 @@
 """Creating a server class with custom functions"""
 import os
 from dotenv import load_dotenv
+
+
 class Server:
     """server class that is used during main.py"""
+
     def __init__(self):
         """creates the roles as variables from the .env file and 
         also finds the id of the roles through the .env file """
@@ -20,9 +23,11 @@ class Server:
         self.alumni_role_id = int(ALUMNI_ROLE)
         self.faculty_role_id = int(FACULTY_ROLE)
         self.guild_id: int = int(GUILD)
+
     def get_member(self, ctx):
         """returns server id"""
         return self.server.get_member(ctx.user.id)
+
     def get_roles(self, affiliation):
         """sets the roles as verified and set affiliation"""
         print(affiliation)
