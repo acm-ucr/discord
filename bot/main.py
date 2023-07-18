@@ -3,12 +3,12 @@ import os
 import re
 import shortuuid
 from dotenv import load_dotenv
-import discord
-from discord.ext import commands
-from discord import app_commands
 from bot.firebase_db import Firestore
 from bot.sendgrid_email import Sendgrid
 from bot.server import Server
+import discord
+from discord.ext import commands
+from discord import app_commands
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
