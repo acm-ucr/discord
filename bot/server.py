@@ -49,4 +49,3 @@ class Server:
     def get_guild(self) -> int:
         """returns server id"""
         return self.guild_id
-        
