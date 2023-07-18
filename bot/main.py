@@ -20,6 +20,8 @@ SENDGRID = Sendgrid()
 GUILD = Server()
 
 DISAPPOINTMENT_GIF = "https://media.tenor.com/SaUF80F_n34AAAAC/gordon-ramsey-wtf.gif"
+
+
 @bot.event
 async def on_ready():
     """sets the server as the guild for later use"""
@@ -68,7 +70,7 @@ async def secrets(
                                             ephemeral=True)
             return
         if ((role.name == project.value)
-              and (role.name == "Membership Portal")):
+                and (role.name == "Membership Portal")):
             await ctx.response.send_message("Membership Portal FAKE SECRET",
                                             ephemeral=True)
             return
@@ -108,8 +110,7 @@ async def on_message(message):
         ) or "code" in message.content.lower():
             await message.channel.send(
                 "With all due respect, you had one job: "
-                "use the slash commands.\n{DISAPPOINTMENT_GIF}"
-            )
+                "use the slash commands.\n{DISAPPOINTMENT_GIF}")
 
 
 async def isDM(ctx):
@@ -155,7 +156,7 @@ async def verify(
     if user_id == "Too Many or Not Enough Documents Fetched":
         await ctx.response.send_message(
             "There is an error with the number of accounts associated with this Discord or Email."
-              " Please contact an ACM officer for further assistance",
+            " Please contact an ACM officer for further assistance",
             ephemeral=True)
 
     elif user_data == {}:
