@@ -1,7 +1,9 @@
 """Creating a server class with custom functions"""
 import os
 from dotenv import load_dotenv
-
+import discord
+from discord.ext import commands
+from discord import app_commands
 
 class Server:
     """server class that is used during main.py"""
@@ -16,6 +18,7 @@ class Server:
         UNDERGRADUATE_ROLE = os.getenv('DISCORD_UNDERGRADUATE_ROLE')
         FACULTY_ROLE = os.getenv('DISCORD_FACULTY_ROLE')
         GUILD = os.getenv('DISCORD_GUILD')
+
         self.server = None
         self.verified_role_id: int = int(VERIFIED_ROLE)
         self.undergraduate_role_id = int(UNDERGRADUATE_ROLE)
@@ -49,3 +52,7 @@ class Server:
     def get_guild(self) -> int:
         """returns server id"""
         return self.guild_id
+    
+    def has_role(user, role_id):
+        role = discord.utils.get(user.roles, id=role_id)
+        return role is not None

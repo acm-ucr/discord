@@ -9,6 +9,7 @@ from bot.server import Server
 import discord
 from discord.ext import commands
 from discord import app_commands
+from .secrets import Secrets
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -33,9 +34,8 @@ async def on_ready():
     except ConnectionError as e:
         print(e)
 
-
 @bot.tree.command(name="secrets")
-@app_commands.choices(project=[
+@app_commands.choices(projects=[
     app_commands.Choice(name="Discord Bot", value="Discord Bot"),
     app_commands.Choice(name="bitByBIT", value="bitByBIT"),
     app_commands.Choice(name="R'Mate", value="R'Mate"),
@@ -43,38 +43,13 @@ async def on_ready():
 ])
 @commands.has_any_role("R'Mate", 'bitByBIT', 'Membership Portal',
                        'Discord Bot')
-async def secrets(
-    ctx: discord.Interaction,
-    project: app_commands.Choice[str],
+async def send_secrets(
+    ctx,
+    projects: app_commands.Choice[str],
 ) -> None:
-    """finds the Software Development server id 
-    goes through user's roles in the server
-    if the user has the same role as their choice 
-    they are given secret"""
-    user_guilds = ctx.user.mutual_guilds
-    for guild in user_guilds:
-        if guild.id == 984881520697278514:
-            user = guild.get_member(ctx.user.id)
-            user_roles = user.roles
-    for role in user_roles:
-        if (role.name == project.value) and (role.name == "Discord Bot"):
-            await ctx.response.send_message("DISCORD BOT FAKE SECRET",
-                                            ephemeral=True)
-            return
-        if ((role.name == project.value) and (role.name == "bitByBIT")):
-            await ctx.response.send_message("bitByBIT FAKE SECRET",
-                                            ephemeral=True)
-            return
-        if ((role.name == project.value) and (role.name == "R'Mate")):
-            await ctx.response.send_message("R'Mate FAKE SECRET",
-                                            ephemeral=True)
-            return
-        if ((role.name == project.value)
-                and (role.name == "Membership Portal")):
-            await ctx.response.send_message("Membership Portal FAKE SECRET",
-                                            ephemeral=True)
-            return
-        await ctx.response.send_message("Wrong role!", ephemeral=True)
+    project: str = str(projects.value)
+    secrets = Secrets(bot)
+    await secrets.send_secrets(ctx, project)
     return
 
 
@@ -179,7 +154,7 @@ async def verify(
 
 
 @bot.tree.command(name="code")
-@app_commands.describe(code="8 Character Code Sent Via Email")
+@app_commands.describe(codestring="8 Character Code Sent Via Email")
 async def code(ctx: discord.Interaction, codestring: str) -> None:
     """command for the verification code after user has submitted verify
     checks if the verification code fits code user submitted through try block"""
