@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
+
 class Server:
     """server class that is used during main.py"""
 
@@ -52,7 +53,7 @@ class Server:
     def get_guild(self) -> int:
         """returns server id"""
         return self.guild_id
-    
+
     def has_role(user, role_id):
         role = discord.utils.get(user.roles, id=role_id)
         return role is not None
