@@ -47,6 +47,7 @@ async def send_secrets(
     ctx,
     projects: app_commands.Choice[str],
 ) -> None:
+    """Gives secrets to the user depending on their role"""
     project: str = str(projects.value)
     secrets = Secrets(bot)
     await secrets.send_secrets(ctx, project)
@@ -193,7 +194,3 @@ async def code(ctx: discord.Interaction, codestring: str) -> None:
 def main():
     """runs bot with the .env token"""
     bot.run(TOKEN)
-
-
-if __name__ == '__main__':
-    main()
