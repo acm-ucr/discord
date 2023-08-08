@@ -34,6 +34,7 @@ async def on_ready():
     except ConnectionError as e:
         print(e)
 
+
 @bot.tree.command(name="secrets")
 @app_commands.choices(projects=[
     app_commands.Choice(name="Discord Bot", value="Discord Bot"),
