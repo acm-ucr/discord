@@ -1,14 +1,12 @@
-"""Creating a server class with custom functions"""
 import os
 from dotenv import load_dotenv
-
+from discord import Guild
 
 class Server:
-    """server class that is used during main.py"""
+    """Utility class for managing server-related information and operations."""
 
     def __init__(self):
-        """creates the roles as variables from the .env file and 
-        also finds the id of the roles through the .env file """
+        """Initialize server-related settings from environment variables."""
         load_dotenv()
         VERIFIED_ROLE = os.getenv('DISCORD_VERIFIED_ROLE')
         ALUMNI_ROLE = os.getenv('DISCORD_ALUMNI_ROLE')
@@ -16,30 +14,44 @@ class Server:
         UNDERGRADUATE_ROLE = os.getenv('DISCORD_UNDERGRADUATE_ROLE')
         FACULTY_ROLE = os.getenv('DISCORD_FACULTY_ROLE')
         GUILD = os.getenv('DISCORD_GUILD')
-        self.server = None
+        self.server: Guild = None
         self.verified_role_id: int = int(VERIFIED_ROLE)
-        self.undergraduate_role_id = int(UNDERGRADUATE_ROLE)
-        self.graduate_role_id = int(GRADUATE_ROLE)
-        self.alumni_role_id = int(ALUMNI_ROLE)
-        self.faculty_role_id = int(FACULTY_ROLE)
+        self.undergraduate_role_id: int = int(UNDERGRADUATE_ROLE)
+        self.graduate_role_id: int = int(GRADUATE_ROLE)
+        self.alumni_role_id: int = int(ALUMNI_ROLE)
+        self.faculty_role_id: int = int(FACULTY_ROLE)
         self.guild_id: int = int(GUILD)
 
     def get_member(self, ctx):
-        """returns server id"""
+        """Get a member from the server using the context.
+
+        Args:
+            ctx (Context): The context of the command.
+
+        Returns:
+            Member: The corresponding member in the server.
+        """
         return self.server.get_member(ctx.user.id)
 
     def get_roles(self, affiliation):
-        """sets the roles as verified and set affiliation"""
+        """Get a list of roles based on the user's affiliation.
+
+        Args:
+            affiliation (str): The affiliation of the user.
+
+        Returns:
+            list: A list of role objects.
+        """
         print(affiliation)
-        affiliation_role_id = 0
+        affiliation_role_id: int = 0
         if affiliation == "undergraduate":
-            affiliation_role_id = self.undergraduate_role_id
+            affiliation_role_id: int = self.undergraduate_role_id
         elif affiliation == "graduate":
-            affiliation_role_id = self.graduate_role_id
+            affiliation_role_id: int = self.graduate_role_id
         elif affiliation == "alumni":
-            affiliation_role_id = self.alumni_role_id
+            affiliation_role_id: int = self.alumni_role_id
         elif affiliation == "faculty":
-            affiliation_role_id = self.faculty_role_id
+            affiliation_role_id: int = self.faculty_role_id
 
         return [
             self.server.get_role(self.verified_role_id),
@@ -47,5 +59,9 @@ class Server:
         ]
 
     def get_guild(self) -> int:
-        """returns server id"""
+        """Get the ID of the Discord server (guild).
+
+        Returns:
+            int: The ID of the Discord server (guild).
+        """
         return self.guild_id
