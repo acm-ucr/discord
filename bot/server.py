@@ -1,6 +1,5 @@
 """Create a server class to handle member verification"""
 
-
 import os
 from dotenv import load_dotenv
 from discord import Guild, utils

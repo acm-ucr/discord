@@ -8,8 +8,6 @@ from bot.sendgrid_email import Sendgrid
 from bot.server import Server
 
 
-
-
 class Verification:
     """Class to handle verification process"""
 
@@ -60,7 +58,8 @@ class Verification:
         elif user_data == {}:
             uuid: str = ShortUUID().random(length=8)
             self.SENDGRID.sendEmail(email, name, discord, uuid)
-            self.FIRESTORE.createUser(email, name, discord, uuid, affiliation.value)
+            self.FIRESTORE.createUser(email, name, discord, uuid,
+                                      affiliation.value)
 
             await ctx.response.send_message(
                 f"Hi **{name}** your verification code is sent to your email at **{email}** "

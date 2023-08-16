@@ -2,6 +2,7 @@
 
 from discord import Embed, Member, Color
 
+
 # pylint: disable=too-few-public-methods
 class Welcome:
     """Class to Handle Welcome Events"""
