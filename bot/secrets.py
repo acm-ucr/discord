@@ -1,40 +1,80 @@
-from discord.ext import commands
-from discord import Interaction, Role, Guild, Member, app_commands
+"""Class to handle secrets in a secure manner"""
+
+
+import os
 from dotenv import load_dotenv
+import discord
+from discord import Client
+
 
 class Secrets:
-    def __init__(self, bot):
-        load_dotenv()
-        ACM_SOFTWARE_DEVELOPMENT_ID = os.getenv('DISCORD_ACM_SOFTWARE_DEVELOPMENT_ID')
-        self.guild_id: int = int(ACM_SOFTWARE_DEVELOPMENT_ID)
-        self.guild = bot.get_guild(self.guild_id)
+    """secrets class that is mainly used for send_secrets"""
 
-    async def get_secrets(
-        self,
-        ctx: Interaction,
-        project: app_commands.Choice[str],
-    ) -> None:
-        """Display secrets based on user's roles and selected project"""
-        user_guilds: list[Guild] = ctx.user.mutual_guilds
-        user: Member  = self.guild.get_member(ctx.user.id)
-        user_roles: list[Role] = user.roles
-        for role in user_roles:
-            if (role.name == project.value) and (role.name == "Discord Bot"):
-                await ctx.response.send_message("DISCORD BOT FAKE SECRET",
+    def __init__(self, bot: Client):
+        """loads .env files for later use"""
+        load_dotenv()
+        self.bot: Client = bot
+        self.guild_id: int = int(
+            os.getenv('DISCORD_ACM_SOFTWARE_DEVELOPMENT_ID'))
+        self.bot_role_id: int = int(os.getenv('DISCORD_BOT_ROLE'))
+        self.bitbybit_role_id: int = int(os.getenv('DISCORD_BITBYBIT_ROLE'))
+        self.membership_role_id: int = int(
+            os.getenv('DISCORD_MEMBERSHIP_PORTAL_ROLE'))
+        self.rmate_role_id: int = int(os.getenv('DISCORD_RMATE_ROLE'))
+
+    async def get_member(self, user_id):
+        """returns a member from a specific guild"""
+        guild = await self.bot.fetch_guild(self.guild_id)
+        if guild:
+            return await guild.fetch_member(user_id)
+        return None
+
+    def has_role(self, user, role_id):
+        """returns true or false if user has the role"""
+        role = discord.utils.get(user.roles, id=role_id)
+        return role is not None
+
+    async def get_secrets(self, ctx, project):
+        """send secret file to the user depending on their role"""
+        member_id = ctx.user.id  # Get the member's ID from the context
+        member = await self.get_member(member_id
+                                       )  # Get the member using their ID
+        guild = self.bot.get_guild(self.guild_id)
+        if guild is None:
+            print(f"Could not find guild with id {self.guild_id}")
+            return
+        if member is None:
+            print(
+                f"Could not find member with id {ctx.user.id} in guild {self.guild_id}"
+            )
+            return
+        if self.has_role(member,
+                         self.bot_role_id) and project == "Discord Bot":
+            with open('secrets/Discord Bot.env', 'rb') as fp:
+                await ctx.response.send_message(file=discord.File(
+                    fp, filename=f"{project}.env"),
                                                 ephemeral=True)
-                return
-            if ((role.name == project.value) and (role.name == "bitByBIT")):
-                await ctx.response.send_message("bitByBIT FAKE SECRET",
+            return
+        if self.has_role(member,
+                         self.bitbybit_role_id) and project == "bitByBIT":
+            with open('secrets/bitByBIT.env', 'rb') as fp:
+                await ctx.response.send_message(file=discord.File(
+                    fp, filename=f"{project}.env"),
                                                 ephemeral=True)
-                return
-            if ((role.name == project.value) and (role.name == "R'Mate")):
-                await ctx.response.send_message("R'Mate FAKE SECRET",
+            return
+        if self.has_role(member, self.rmate_role_id) and project == "R'Mate":
+            with open("secrets/R'Mate.env", 'rb') as fp:
+                await ctx.response.send_message(file=discord.File(
+                    fp, filename=f"{project}.env"),
                                                 ephemeral=True)
-                return
-            if ((role.name == project.value)
-                    and (role.name == "Membership Portal")):
-                await ctx.response.send_message("Membership Portal FAKE SECRET",
+            return
+        if self.has_role(
+                member,
+                self.membership_role_id) and project == "Membership Portal":
+            with open('secrets/Membership Portal.env', 'rb') as fp:
+                await ctx.response.send_message(file=discord.File(
+                    fp, filename=f"{project}.env"),
                                                 ephemeral=True)
-                return
-            await ctx.response.send_message("Wrong role!", ephemeral=True)
-        return
+            return
+
+        await ctx.response.send_message("Wrong role!", ephemeral=True)

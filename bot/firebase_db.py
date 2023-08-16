@@ -1,7 +1,11 @@
+"""Firebase API to handle database queries"""
+
+
 import os
 from datetime import datetime
-from firebase_admin import firestore, initialize_app, credentials, Query
+from firebase_admin import firestore, initialize_app, credentials
 from dotenv import load_dotenv
+
 
 class Firestore:
     """Wrapper class for interacting with Firestore database"""
@@ -14,18 +18,20 @@ class Firestore:
         with open("firebase_creds.json", "w", encoding="utf-8") as file:
             file.write(CREDS)
 
-        cred: credentials.Certificate = credentials.Certificate("firebase_creds.json")
+        cred: credentials.Certificate = credentials.Certificate(
+            "firebase_creds.json")
         initialize_app(cred)
 
-        db: firestore.Firestore = firestore.client()
-        self.db_ref: firestore.AsyncCollectionReference = db.collection('users')
+        db = firestore.client()
+        self.db_ref = db.collection(
+            'users')
 
     def getUser(self, discord, email):
         """Fetch user information based on Discord ID or email"""
-        query_ref: Query = self.db_ref.where('discord', '==', discord)
+        query_ref = self.db_ref.where('discord', '==', discord)
         discord_docs: list = query_ref.get()
 
-        query_ref: Query = self.db_ref.where('email', '==', email)
+        query_ref = self.db_ref.where('email', '==', email)
         email_docs: list = query_ref.get()
 
         if len(discord_docs) == 0 and len(email_docs) == 0:
@@ -65,13 +71,15 @@ class Firestore:
 
     def verifyUser(self, discord, uuid):
         """Verify a user based on their Discord ID and UUID"""
-        query_ref: Query = self.db_ref.where('discord', '==', discord)
+        query_ref = self.db_ref.where('discord', '==', discord)
         docs: list = query_ref.get()
 
         if len(docs) != 1:
-            return [False, {
-                "error": "Too Many or Not Enough Documents Fetched"
-            }]
+            return [
+                False, {
+                    "error": "Too Many or Not Enough Documents Fetched"
+                }
+            ]
 
         for doc in docs:
             user: dict = {"id": doc.id, "data": doc.to_dict()}

@@ -1,11 +1,15 @@
+"""Create a server class to handle member verification"""
+
+
 import os
 from dotenv import load_dotenv
-from discord import Guild
+from discord import Guild, utils
+
 
 class Server:
     """Utility class for managing server-related information and operations."""
 
-    def __init__(self):
+    def __init__(self, bot):
         """Initialize server-related settings from environment variables."""
         load_dotenv()
         VERIFIED_ROLE = os.getenv('DISCORD_VERIFIED_ROLE')
@@ -13,8 +17,8 @@ class Server:
         GRADUATE_ROLE = os.getenv('DISCORD_GRADUATE_ROLE')
         UNDERGRADUATE_ROLE = os.getenv('DISCORD_UNDERGRADUATE_ROLE')
         FACULTY_ROLE = os.getenv('DISCORD_FACULTY_ROLE')
-        GUILD = os.getenv('DISCORD_GUILD')
-        self.server: Guild = None
+        GUILD = os.getenv('DISCORD_ACM_SERVER_ID')
+        self.server: Guild = bot.get_guild(int(GUILD))
         self.verified_role_id: int = int(VERIFIED_ROLE)
         self.undergraduate_role_id: int = int(UNDERGRADUATE_ROLE)
         self.graduate_role_id: int = int(GRADUATE_ROLE)
@@ -46,3 +50,8 @@ class Server:
     def get_guild(self) -> int:
         """Get the ID of the Discord server (guild)"""
         return self.guild_id
+
+    def has_role(self, user, role_id):
+        """Check if a particular user has a role"""
+        role = utils.get(user.roles, id=role_id)
+        return role is not None

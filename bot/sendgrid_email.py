@@ -1,7 +1,11 @@
+"""Email service API to handle sending verification codes"""
+
+
 import os
 from dotenv import load_dotenv
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, SendGridException
+
 
 class Sendgrid:
     """Wrapper class for sending emails using the SendGrid API"""
@@ -17,7 +21,8 @@ class Sendgrid:
         message: dict = Mail(from_email='contact.acmucr@gmail.com',
                              to_emails=email,
                              subject='ACM UCR Discord Verification',
-                             html_content=self.generateMessage(uuid, name, discord))
+                             html_content=self.generateMessage(
+                                 uuid, name, discord))
 
         try:
             self.sendgrid.send(message)

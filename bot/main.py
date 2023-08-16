@@ -1,3 +1,5 @@
+"""Discord Bot: Interacts with the Discord API to provide different functionalities"""
+
 import os
 from dotenv import load_dotenv
 from bot.firebase_db import Firestore
@@ -7,26 +9,24 @@ from bot.welcome import Welcome
 from bot.verification import Verification
 from bot.secrets import Secrets
 from discord.ext import commands
-from discord import DMChannel, Intents, Embed, Guild, Client, Color
+from discord import Intents, Client, app_commands, Interaction
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-ACM_SERVER_ID = os.getenv('DISCORD_ACM_SERVER_ID')
 
 bot: Client = commands.Bot(command_prefix="!", intents=Intents.all())
 
 FIRESTORE = Firestore()
 SENDGRID = Sendgrid()
-GUILD = Server()
+GUILD = Server(bot)
 WELCOME = Welcome()
-VERIFICATION = Verification()
+VERIFICATION = Verification(bot)
 SECRETS = Secrets(bot)
 
 
 @bot.event
 async def on_ready():
     """Event triggered when the bot is ready"""
-    GUILD.server: Guild = bot.get_guild(ACM_SERVER_ID)
     try:
         await bot.tree.sync()
     except ConnectionError as e:
@@ -37,6 +37,7 @@ async def on_ready():
 async def on_member_join(member):
     """Runs when a new member joins the Discord"""
     await WELCOME.send_welcome_message(member)
+
 
 @bot.tree.command(name="verify")
 @app_commands.describe(name="Full Name", email="UCR Email")
@@ -52,16 +53,19 @@ async def verify(
     email: str,
     affiliation: app_commands.Choice[str],
 ) -> None:
+    """Initiate verification process"""
     await VERIFICATION.verify(ctx, name, email, affiliation)
+
 
 @bot.tree.command(name="code")
 @app_commands.describe(code="8 Character Code Sent Via Email")
 async def code(ctx: Interaction, codestring: str) -> None:
+    """Accept verification codes"""
     await VERIFICATION.code(ctx, codestring)
 
 
 @bot.tree.command(name="secrets")
-@app_commands.choices(project=[
+@app_commands.choices(projects=[
     app_commands.Choice(name="Discord Bot", value="Discord Bot"),
     app_commands.Choice(name="bitByBIT", value="bitByBIT"),
     app_commands.Choice(name="R'Mate", value="R'Mate"),
@@ -73,11 +77,10 @@ async def secrets(
     ctx: Interaction,
     project: app_commands.Choice[str],
 ) -> None:
+    """Send environment secrets to members"""
     await SECRETS.get_secrets(ctx, project)
 
 
 def main():
-    """
-    Main function to run the bot with the .env token.
-    """
+    """Run Bot"""
     bot.run(TOKEN)
