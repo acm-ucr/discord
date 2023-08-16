@@ -3,34 +3,30 @@ from dotenv import load_dotenv
 from bot.firebase_db import Firestore
 from bot.sendgrid_email import Sendgrid
 from bot.server import Server
-import discord
+from bot.welcome import Welcome
+from bot.verification import Verification
+from bot.secrets import Secrets
 from discord.ext import commands
-from discord import Client
-from discord import Guild
-from discord import Embed
-from discord import Color
-from discord import DMChannel
+from discord import DMChannel, Intents, Embed, Guild, Client, Color
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+ACM_SERVER_ID = os.getenv('DISCORD_ACM_SERVER_ID')
 
-bot: Client = commands.Bot(command_prefix="!", intents=discord.Intents.all())
+bot: Client = commands.Bot(command_prefix="!", intents=Intents.all())
 
 FIRESTORE = Firestore()
 SENDGRID = Sendgrid()
 GUILD = Server()
+WELCOME = Welcome()
+VERIFICATION = Verification()
+SECRETS = Secrets(bot)
 
 
 @bot.event
 async def on_ready():
-    """
-    Event triggered when the bot is ready.
-
-    This function sets the server as the guild for later use.
-    """
-    for guild in bot.guilds:
-        if guild.id == GUILD.get_guild():
-            GUILD.server: Guild = guild
+    """Event triggered when the bot is ready"""
+    GUILD.server: Guild = bot.get_guild(ACM_SERVER_ID)
     try:
         await bot.tree.sync()
     except ConnectionError as e:
@@ -39,41 +35,45 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member):
-    """
-    Event triggered when a member joins the server.
+    """Runs when a new member joins the Discord"""
+    await WELCOME.send_welcome_message(member)
 
-    This function sends a welcome message to the new member with instructions for verification.
-    """
-    if member.guild == GUILD.server:
-        embed: Embed = Embed(
-            title="Welcome to ACM!",
-            description="To gain access to the full server, please run the following slash commands.",
-            color=Color.blue()  # Set the color of the embed (optional)
-        )
+@bot.tree.command(name="verify")
+@app_commands.describe(name="Full Name", email="UCR Email")
+@app_commands.choices(affiliation=[
+    app_commands.Choice(name="Undergraduate", value="undergraduate"),
+    app_commands.Choice(name="Graduate", value="graduate"),
+    app_commands.Choice(name="Alumni", value="alumni"),
+    app_commands.Choice(name="Faculty", value="faculty"),
+])
+async def verify(
+    ctx: Interaction,
+    name: str,
+    email: str,
+    affiliation: app_commands.Choice[str],
+) -> None:
+    await VERIFICATION.verify(ctx, name, email, affiliation)
 
-        # Add fields to the embed
-        embed.add_field(name="/verify",
-                        value="You will receive an 8-digit code in your email",
-                        inline=False)
-        embed.add_field(
-            name="/code",
-            value="Please enter that code in this command for verification",
-            inline=True)
-
-        await member.send(embed=embed)
+@bot.tree.command(name="code")
+@app_commands.describe(code="8 Character Code Sent Via Email")
+async def code(ctx: Interaction, codestring: str) -> None:
+    await VERIFICATION.code(ctx, codestring)
 
 
-@bot.event
-async def on_message(message):
-    """
-    Event triggered when a message is sent.
-
-    This function runs when a user sends a message without using slash commands.
-    """
-    if isinstance(message.channel, DMChannel) and message.author != bot.user:
-        if "verify" in message.content.lower() or "code" in message.content.lower():
-            await message.channel.send(
-                "Please use the slash commands. The format is \"/\" followed by the command of your choice.")
+@bot.tree.command(name="secrets")
+@app_commands.choices(project=[
+    app_commands.Choice(name="Discord Bot", value="Discord Bot"),
+    app_commands.Choice(name="bitByBIT", value="bitByBIT"),
+    app_commands.Choice(name="R'Mate", value="R'Mate"),
+    app_commands.Choice(name="Membership Portal", value="Membership Portal"),
+])
+@commands.has_any_role("R'Mate", 'bitByBIT', 'Membership Portal',
+                       'Discord Bot')
+async def secrets(
+    ctx: Interaction,
+    project: app_commands.Choice[str],
+) -> None:
+    await SECRETS.get_secrets(ctx, project)
 
 
 def main():
@@ -81,7 +81,3 @@ def main():
     Main function to run the bot with the .env token.
     """
     bot.run(TOKEN)
-
-
-if __name__ == '__main__':
-    main()

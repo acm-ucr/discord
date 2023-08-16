@@ -4,7 +4,7 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, SendGridException
 
 class Sendgrid:
-    """Wrapper class for sending emails using the SendGrid API."""
+    """Wrapper class for sending emails using the SendGrid API"""
 
     def __init__(self):
         """Initialize the Sendgrid client using the API key from environment variables."""
@@ -13,14 +13,7 @@ class Sendgrid:
         self.sendgrid: SendGridAPIClient = SendGridAPIClient(SG_API_KEY)
 
     def sendEmail(self, email, name, discord, uuid):
-        """Send an email with verification information.
-
-        Args:
-            email (str): Recipient's email address.
-            name (str): Recipient's name.
-            discord (str): Recipient's Discord ID.
-            uuid (str): Verification UUID.
-        """
+        """Send an email with verification information"""
         message: dict = Mail(from_email='contact.acmucr@gmail.com',
                              to_emails=email,
                              subject='ACM UCR Discord Verification',
@@ -32,16 +25,7 @@ class Sendgrid:
             print(f"An error occurred while sending the email: {str(e)}")
 
     def generateMessage(self, uuid, name, discord):
-        """Generate the HTML content for the verification email.
-
-        Args:
-            uuid (str): Verification UUID.
-            name (str): Recipient's name.
-            discord (str): Recipient's Discord ID.
-
-        Returns:
-            str: HTML content for the verification email.
-        """
+        """Generate the HTML content for the verification email"""
         html_message: str = f"""
         Hello <b>{name}</b>,
         <br/><br/>
@@ -53,7 +37,6 @@ class Sendgrid:
         <br/><br/>
         Thank you<br/>
         ACM at UCR
-
         """
 
         return html_message

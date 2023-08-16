@@ -23,26 +23,11 @@ class Server:
         self.guild_id: int = int(GUILD)
 
     def get_member(self, ctx):
-        """Get a member from the server using the context.
-
-        Args:
-            ctx (Context): The context of the command.
-
-        Returns:
-            Member: The corresponding member in the server.
-        """
+        """Get a member from the server using context"""
         return self.server.get_member(ctx.user.id)
 
     def get_roles(self, affiliation):
-        """Get a list of roles based on the user's affiliation.
-
-        Args:
-            affiliation (str): The affiliation of the user.
-
-        Returns:
-            list: A list of role objects.
-        """
-        print(affiliation)
+        """Get a list of roles based on the user's affiliation."""
         affiliation_role_id: int = 0
         if affiliation == "undergraduate":
             affiliation_role_id: int = self.undergraduate_role_id
@@ -59,9 +44,5 @@ class Server:
         ]
 
     def get_guild(self) -> int:
-        """Get the ID of the Discord server (guild).
-
-        Returns:
-            int: The ID of the Discord server (guild).
-        """
+        """Get the ID of the Discord server (guild)"""
         return self.guild_id
