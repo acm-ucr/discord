@@ -1,4 +1,5 @@
-"""file for the secrets class used in main"""
+"""Class to handle secrets in a secure manner"""
+
 import os
 from dotenv import load_dotenv
 import discord
@@ -12,7 +13,8 @@ class Secrets:
         """loads .env files for later use"""
         load_dotenv()
         self.bot: Client = bot
-        self.guild_id: int = int(os.getenv('DISCORD_PROJECT_GUILD'))
+        self.guild_id: int = int(
+            os.getenv('DISCORD_ACM_SOFTWARE_DEVELOPMENT_ID'))
         self.bot_role_id: int = int(os.getenv('DISCORD_BOT_ROLE'))
         self.bitbybit_role_id: int = int(os.getenv('DISCORD_BITBYBIT_ROLE'))
         self.membership_role_id: int = int(
@@ -31,7 +33,7 @@ class Secrets:
         role = discord.utils.get(user.roles, id=role_id)
         return role is not None
 
-    async def send_secrets(self, ctx, project):
+    async def get_secrets(self, ctx, project):
         """send secret file to the user depending on their role"""
         member_id = ctx.user.id  # Get the member's ID from the context
         member = await self.get_member(member_id
